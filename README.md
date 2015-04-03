@@ -2,7 +2,7 @@ pmimporter
 ==========
 
 * Summary: Import world maps into PocketMine-MP 1.4
-* WebSite: [github](https://github.com/alejandroliu/pocketmine-plugins/tree/master/pmimporter)
+* WebSite: [github](https://github.com/alejandroliu/pmimporter)
 
 Overview
 --------
@@ -290,7 +290,7 @@ References
 ----------
 
 * [PocketMine-MP](http://www.pocketmine.net/)
-* [Block defintions](https://raw.githubusercontent.com/alejandroliu/pocketmine-plugins/master/pmimporter/classlib/pmimporter/blocks.txt)
+* [Block defintions](https://raw.githubusercontent.com/alejandroliu/pmimporter/master/classlib/pmimporter/blocks.txt)
 * [Minecraft PC data values](http://minecraft.gamepedia.com/Data_values)
 * [Minecraft PE data values](http://minecraft.gamepedia.com/Data_values_%28Pocket_Edition%29)
 
@@ -313,10 +313,10 @@ Issues and Bugs
 Changes
 ------
 
-* 1.5: ????
+* 1.5: ??
+* 1.4: Maintenance release
   * pmentities fix typos
   * minor text info tweaks
-* 1.4: Maintenance release
   * Added pmentity to dump entity data
   * Added region settings to MCPE0.2.0 and PMF1.3 formats.
   * Fixed offset functionality.

@@ -258,6 +258,11 @@ FAQ
 * A: Because my programming skills suck.  I usally start a conversion
   and go to bed.  When I wake up in the morning the map is ready to
   play.
+* Q: Does it support LevelDB files (Pocket Edition v0.9.0 infinite
+  worlds)?
+  A: No, it does *NOT*.  You need to convert those to _Anvil_ format
+  first using something like
+  [LevelDb2Avnil](https://github.com/ljyloo/LevelDb2Avnil).
 * Q: Why tall builds seem to be chopped off at te top?
 * A: That is a limitation of Pocket Edition.  It only supports chunks
   that are up to 128 blocks high, while the PC edition Anvil worlds

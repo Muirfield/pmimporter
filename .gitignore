@@ -1,0 +1,5 @@
+bin
+pocketmine-src
+maps
+*.phar
+t.sh

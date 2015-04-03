@@ -58,7 +58,6 @@ if ($ro && count($argv)) {
 	$levelData->SpawnZ = new Int("SpawnZ", (int) $z);
       }
       break;
-      break;
     case "name":
       // LevelName : string
       if ($levelData->LevelName != $v) {
@@ -75,7 +74,7 @@ if ($ro && count($argv)) {
       break;
     case "generator": // generatorName(String),generatorVersion(Int)
       $v = explode(",",$v);
-      if (count($v) < 1 || count($v) > 2) die("Invalid generator: $kv[0]\n");
+      if (count($v) < 1 || count($v) > 2) die("Invalid generator: $kv[1]\n");
       $genName = array_shift($v);
       if ($levelData->generatorName != $genName) {
 	++$changed;

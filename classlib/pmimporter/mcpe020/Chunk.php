@@ -38,7 +38,7 @@ class Chunk implements \pmimporter\Chunk {
     }
     $this->adjX = $loader->getProvider()->getSetting("Xoff") << 4;
     $this->adjZ = $loader->getProvider()->getSetting("Zoff") << 4;
-    $r = $fmt->getSetting("regions");
+    $r = $loader->getProvider()->getSetting("regions");
     if ($r != null) {
       if (preg_match('/^\s*(-?\d+)\s*,\s*(-?\d+)\s*$/',$r,$mv)) {
 	$this->adjX += $mv[1] * (16*32);
@@ -115,7 +115,7 @@ class Chunk implements \pmimporter\Chunk {
     foreach ($this->tiles as $tile) {
       if (isset($tile->x) && isset($tile->y) && isset($tile->z)) {
 	if ($tile->x->getValue() < $min_x || $tile->x->getValue() > $max_x ||
-	    $tile->z->getValue() < $min_z || $tile->z->getValue() > $max_z) 
+	    $tile->z->getValue() < $min_z || $tile->z->getValue() > $max_z)
 	  continue;
 	// Straight copy.
 	$t = clone $tile;

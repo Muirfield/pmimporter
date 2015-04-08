@@ -67,7 +67,7 @@ class McPe020 implements LevelFormat {
       if (count($spawn) == 3)
 	return new Vector3((float)$spawn[0],(float)$spawn[1],(float)$spawn[2]);
     }
-    return new Vector3((float)$this->adjSpawn("X"),(float)$this->getAttr("spawnY"),(float)$this->adjSpawn("Z"));
+    return new Vector3((float)$this->adjSpawn("X"),(float)$this->getAttr("spawnY","SpawnY"),(float)$this->adjSpawn("Z"));
   }
   public function getGenerator() {
     if (isset($this->settings["generator"]))
@@ -86,7 +86,7 @@ class McPe020 implements LevelFormat {
       $dat = file_get_contents($path.'/level.dat');
       if ((Binary::readLInt(substr($dat,0,4)) == 2
 	   || Binary::readLInt(substr($dat,0,4)) == 3)
-	  && Binary::readLInt(substr($dat,4,4)) == (strlen($dat) - 8)) 
+	  && Binary::readLInt(substr($dat,4,4)) == (strlen($dat) - 8))
 	return true;
     }
     return false;

@@ -315,10 +315,19 @@ Issues and Bugs
     copied but are usually ignored by PocketMine.
 * Conversion table could be better.  I am open to suggestions.
 
+Todo
+----
+
+- merge chunks ... by selecting square regions and offsets
+  - limit this at region|chunk resolution.
+  - Always specify corners and merge
+* Add Shift regions option to Copier.php
+
 Changes
 ------
 
-* 1.5: ??
+* 1.5: Bugfix
+  * BugFixes in MCPE0.2.0 format.
 * 1.4: Maintenance release
   * pmentities fix typos
   * minor text info tweaks

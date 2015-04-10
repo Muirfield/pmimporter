@@ -93,7 +93,7 @@ class McPe020 implements LevelFormat {
   }
   public function getRegions() {
     if (isset($this->settings["regions"])) {
-      if (preg_match('/^\s*(\d+)\s*,\s*(\d+)\s*$/',$this->settings["regions"],$mv)) {
+      if (preg_match('/^\s*(-?\d+)\s*,\s*(-?\d+)\s*$/',$this->settings["regions"],$mv)) {
 	return [$mv[1].",".$mv[2] => [$mv[1],$mv[2]]];
       }
     }

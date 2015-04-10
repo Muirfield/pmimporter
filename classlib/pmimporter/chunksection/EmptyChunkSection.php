@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 namespace pmimporter\chunksection;
 use pmimporter\chunksection\ChunkSection;
 use pmimporter\ImporterException;
@@ -67,7 +67,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlock($x, $y, $z, $id = null, $meta = null){
-	  throw new ImporterException("Tried to modify an empty Chunk");
+		throw new ImporterException("Tried to modify an empty Chunk");
 	}
 
 	public function getIdArray(){
@@ -87,7 +87,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlockId($x, $y, $z, $id){
-	  throw new ImporterException("Tried to modify an empty Chunk");
+		throw new ImporterException("Tried to modify an empty Chunk");
 	}
 
 	final public function getBlockData($x, $y, $z){
@@ -103,7 +103,7 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlockLight($x, $y, $z, $level){
-	  throw new ImporterException("Tried to modify an empty Chunk");
+		throw new ImporterException("Tried to modify an empty Chunk");
 	}
 
 	final public function getBlockSkyLight($x, $y, $z){
@@ -111,6 +111,6 @@ class EmptyChunkSection implements ChunkSection{
 	}
 
 	final public function setBlockSkyLight($x, $y, $z, $level){
-	  throw new ImporterException("Tried to modify an empty Chunk");
+		throw new ImporterException("Tried to modify an empty Chunk");
 	}
 }

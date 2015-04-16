@@ -157,6 +157,7 @@
 -149	UnpoweredComparator	0
 -150	PoweredComparator	0
 -151	DaylightDetector	0
+; WILL BE AVAILABLE IN 0.11.0
 -152	RedstoneBlock		89
 -153	NetherQuartzOre		112
 -154	Hopper			248
@@ -188,6 +189,8 @@
 -180	RedSandstoneStairs	128
 -181	DoubleRedSanstoneSlab	43
 -182	RedSandstoneSlab	44
+; For 0.11.0
+;-198	GrassPath		171
 243	Podzol
 244	Beetroot
 245	StoneCutter

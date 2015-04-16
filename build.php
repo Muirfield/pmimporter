@@ -42,20 +42,25 @@ foreach (['main.php'] as $f) {
 	$p[$f] = file_get_contents($f);
 }
 
-$help = "Available sub-commands:\n";
-foreach (glob('scripts/*.php') as $f) {
-	$f = preg_replace('/^scripts\//','',$f);
-	$f = preg_replace('/\.php$/','',$f);
-	$help .= "\t$f\n";
-}
-$help .= "\tversion\n";
-$help .= "\tplugin\n";
-$help .= "\treadme\n";
-$p['scripts/help.php'] = $help;
-$p['scripts/version.php'] = "<?php require_once(CLASSLIB_DIR.'version.txt');";
-$p['scripts/readme.php'] = file_get_contents('README.md');
+$scripts= ["version","plugin","man"];
 
-$dirs=['classlib','scripts'];
+$help = "Available sub-commands:\n";
+foreach (glob('scripts/*.php') as $fp) {
+	$f = preg_replace('/^scripts\//','',$fp);
+	$f = preg_replace('/\.php$/','',$f);
+	$f = preg_replace('/^pm/','',$f);
+	$scripts[] = $f;
+	echo "$fp as $f\n";
+	$p["scripts/$f.php"] = file_get_contents($fp);
+}
+sort($scripts);
+$p['scripts/help.php'] = "Available sub-commands:\n\t".
+							  implode("\n\t",$scripts)."\n";
+
+$p['scripts/version.php'] = "<?php require_once(CLASSLIB_DIR.'version.txt');";
+$p['scripts/man.php'] = file_get_contents('README.md');
+
+$dirs=['classlib'];
 while(count($dirs)) {
 	$d = array_shift($dirs);
 	$dh = opendir($d) or die("$d: unable to open directory\n");

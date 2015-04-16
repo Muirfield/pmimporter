@@ -7,10 +7,10 @@ pmimporter
 Overview
 --------
 
-* pmconvert - main conversion tool
-* pmcheck - read world maps and analyze the block, object composition
-* pmentities - dump entity information
-* pmlevel - manipulate some level.dat settings
+* convert - main conversion tool
+* check - read world maps and analyze the block, object composition
+* entities - dump entity information
+* level - manipulate some level.dat settings
 * nbtdump - Dump the contents of NBT files
 * dumpchunk - Extract an specific chunk from a map so it can be
   processed by nbtdump.
@@ -52,9 +52,9 @@ In general, the command usage is:
 
 ### Sub-commands
 
-#### PMCONVERT
+#### CONVERT
 
-	pmconvert [-c rules.txt ] [-t count] [-f format] srcpath dstpath
+	convert [-c rules.txt ] [-t count] [-f format] srcpath dstpath
 
 Converts maps.
 
@@ -68,7 +68,7 @@ Converts maps.
 * `srcpath` : Directory path to the source world.
 * `dstpath` : Directory path to create the new world.
 
-Also, `pmconvert` allows you to specify special settings to tweak the
+Also, `convert` allows you to specify special settings to tweak the
 format reader/writer code.  These settings are specifc to each
 `format`. To configure you must pass the option:
 
@@ -79,7 +79,7 @@ format reader/writer code.  These settings are specifc to each
 
 #### PMCHECK
 
-	pmcheck worldpath [--all|[rX,rZ[:cX,cZ[+cX,cZ]]] ...]
+	check worldpath [--all|[rX,rZ[:cX,cZ[+cX,cZ]]] ...]
 
 Analyze the number of chunks, blocks, etc in a world map.
 
@@ -90,9 +90,9 @@ Analyze the number of chunks, blocks, etc in a world map.
   31) to analyze.
 * `+cX,cZ` : Additional chunks to add to totals.
 
-#### PMLEVEL
+#### LEVEL
 
-	pmlevel worldpath [attr=value]
+	level worldpath [attr=value]
 
 Displays and modifies certain level attributes.
 
@@ -328,6 +328,8 @@ Changes
 
 * 1.5: Bugfix
   * BugFixes in MCPE0.2.0 format.
+  * BugFixes with region offsests on negative values
+  * Tweaked builds and subcommand names
 * 1.4: Maintenance release
   * pmentities fix typos
   * minor text info tweaks

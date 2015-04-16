@@ -8,7 +8,25 @@ if (!isset($argv[0])) {
 	die();
 }
 
-if (in_array($argv[0],array("version","plugin","readme","help"))) {
+if ($argv[0] == "man") {
+	if (extension_loaded("posix")) {
+		if (posix_isatty(STDIN)) {
+			// Interactive... pipe through more
+			$fin = fopen("phar://pmimporter.phar/scripts/$argv[0].php","r");
+			$fout = popen("more","w");
+			if ($fin && $fout) {
+				stream_copy_to_stream($fin,$fout);
+				fclose($fin);
+				fclose($fout);
+				exit();
+			}
+		}
+	}
+	require_once("phar://pmimporter.phar/scripts/$argv[0].php");
+	exit;
+}
+
+if (in_array($argv[0],array("version","plugin","help"))) {
 	require_once("phar://pmimporter.phar/scripts/$argv[0].php");
 	require_once(CLASSLIB_DIR.'autoload.php');
 	exit;

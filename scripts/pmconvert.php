@@ -71,8 +71,6 @@ $dstformat = LevelFormatManager::getFormatByName($dstformat);
 if (!$dstformat) die("Output format not recognized\n");
 if ($dstformat !== McRegion::class) die("$dstformat: Format not supported\n");
 
-print_r($settings);
-
 $srcfmt = new $srcformat($srcpath,true,$settings["in"]);
 $regions = $srcfmt->getRegions();
 if (!count($regions)) die("No regions found in $srcpath\n");

@@ -1,4 +1,3 @@
-
 <?php
 namespace pmimporter\generic;
 use pmimporter\ImporterException;

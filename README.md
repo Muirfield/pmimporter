@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/alejandroliu/pmimporter/master/ImportMap-icon.png" style="width:64px;height:64px" width="64" height="64"/>
+
 pmimporter
 ==========
 
@@ -326,6 +328,8 @@ Todo
 Changes
 ------
 
+* 1.5upd1: Bugfix
+  * Minor fix in plugin code
 * 1.5: Bugfix
   * BugFixes in MCPE0.2.0 format.
   * BugFixes with region offsests on negative values

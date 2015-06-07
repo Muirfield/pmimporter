@@ -70,7 +70,7 @@ class Main extends Plugin implements CommandExecutor {
 				$sender->sendMessage("Importing $impath to $world in the background");
 				$this->getServer()->broadcastMessage("Importing world, expect LAG!");
 				$dir =$this->getDataFolder();
-				$this->schedule([$this->importer(),'pmconvert',
+				$this->schedule([$this->importer(),'convert',
 									  '-c',$dir.'rules.txt','-f',$dstfmt,
 									  $impath,$target]);
 				return true;

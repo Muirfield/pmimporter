@@ -269,9 +269,10 @@ Todo
   - Always specify corners and merge
 * Add Shift regions option to Copier.php
 
-Changes
-------
+## Changes
 
+* 1.5upd2: Update
+  - Added new blocks since 0.10
 * 1.5upd1: Bugfix
   * Minor fix in plugin code
 * 1.5: Bugfix

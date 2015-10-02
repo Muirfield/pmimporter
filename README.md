@@ -3,17 +3,20 @@
 pmimporter
 ==========
 
-* Summary: Import world maps into PocketMine-MP 1.4
+* Summary: Import world maps into PocketMine-MP
 * WebSite: [github](https://github.com/alejandroliu/pmimporter)
 
 Overview
 --------
 
+
+**TODO:**
+
+* nbtdump - Dump the contents of NBT files
+* level - manipulate some level.dat settings
 * convert - main conversion tool
 * check - read world maps and analyze the block, object composition
 * entities - dump entity information
-* level - manipulate some level.dat settings
-* nbtdump - Dump the contents of NBT files
 * dumpchunk - Extract an specific chunk from a map so it can be
   processed by nbtdump.
 
@@ -21,10 +24,11 @@ Description
 -----------
 
 A collection of tools used for importing world maps for use with
-PocketMine-MP and Minecraft PE.  It can be used from the Command-line
-and also as a plugin for PocketMine-MP.
+PocketMine-MP and Minecraft PE.
 
 It supports the following input formats:
+
+**TODO:**
 
 - McRegion (Minecraft PC Edition, PocketMine v1.4)
 - Anvil (Minecraft PC Edition)
@@ -176,8 +180,7 @@ Requirements:
 * PHP CLI API
 
 Download `pmimporter.phar` and use.  It does *not* need to be
-installed.  If you want to use `pmimporter` as a PocketMine-MP plugin,
-copy the phar file to the PocketMine-MP `plugins` directory.
+installed.
 
 
 Configure translation
@@ -195,63 +198,6 @@ is as follows:
 There is a default set of conversion rules, but you can tweak it by
 using `rules`.
 
-PocketMine-MP Plugin
---------------------
-
-* Summary: Import worlds
-* Dependency Plugins: n/a
-* PocketMine-MP version: 1.4 - API 1.10.0
-* OptionalPlugins: ManyWorlds
-* Categories: World Editing and Management, Admin Tools
-* Plugin Access: Commands, World Editing, Manages Worlds
-
-Basic Usage:
-
-* /im *path-to-map* *level*
-
-Runs `pmimporter` from within PocketMine-MP.  See `pmimporter` for
-more information.
-
-### Command:
-
-* im version
-
-Show the version of the `pmimporter` framework.
-
-* im *path-to-map* *level*
-  * path-to-map : Is the file path towards the location of a map.  By
-    default the path is based from the PocketMine directory.  You can
-    also use a absolute path name.
-  * level : This is the name that the world be given.
-
-### Configuration
-
-Because an import will use an `AsyncTask` for quite a while, it is
-recommended that you increase the `async-workers` value to
-something other than `1`.  This setting is in `pocketmine.yml`, in hte
-`settings` section.
-
-You can configure the translation.  This plugin will create a
-`rules.txt` in its data directory.  The format of `rules.txt`
-contains:
-
-### Permission Nodes:
-
-* im.cmd.im - Allows users to import maps
-
-### Hints
-
-Importing maps is not something you would do while playing Minecraft.
-If you are using the plugin version, you should only run it on an idle
-server.  Otherwise, it is better to use use `pmimporter` directly from
-the command line instead.  You have more options available there.
-
-Under Linux, `pmimporter` can use multiple threads which can speed-up
-things significantly.
-
-### Permission Nodes:
-
-* im.cmd.im - Allows users to import maps
 
 FAQ
 ---
@@ -282,8 +228,6 @@ FAQ
   builds). My recommendation is to change the spawn point to a very
   flat (boring) area.  Sometimes exting and re-entering the game
   helps.
-* Q: Why I get corrupted chunks after I modify some (very detailed) areas?
-* A: You need to upgrade to PocketMine-MP v1.4.1
 * Q: Why I see some blocks that are not in the original map?
 * A: These have to do with how the translation happens.  There are
   blocks that are not supported by Minecraft Pocket Edition.  These

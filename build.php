@@ -14,17 +14,14 @@ error_reporting(E_ALL);
 /*
  * Build script
  */
-$plug = "plugin";
-$plug = preg_replace('/\/*$/',"",$plug).'/';
-if (!is_dir($plug)) die("$plug: directory doesn't exist!\n");
-if (!is_file($pluginYml = $plug."plugin.yml"))
-	die("missing plugin manifest\n");
-if (!is_dir($srcDir = $plug."src/")) die("Source folder not found\n");
-
-$p = new Phar('pmimporter.phar',
+$version = trim(file_get_contents("version.txt"));
+$sver = preg_replace('/\s*pmimporter\s*/',"",$version);
+$p = new Phar('pmimporter_v'.$sver.'.phar',
 				  FilesystemIterator::CURRENT_AS_FILEINFO
 				  | FilesystemIterator::KEY_AS_FILENAME,
 				  'pmimporter.phar');
+
+
 
 // issue the Phar::startBuffering() method call to buffer changes made to the
 // archive until you issue the Phar::stopBuffering() command
@@ -34,15 +31,14 @@ $p->startBuffering();
 // the file stub is merely a small segment of code that gets run initially
 // when the Phar file is loaded, and it always ends with a __HALT_COMPILER()
 
-$p->setStub('<?php Phar::mapPhar(); include "phar://pmimporter.phar/main.php"; __HALT_COMPILER(); ?>');
-if ($plug) $p->setSignatureAlgorithm(Phar::SHA1);
+$p->setStub('<?php Phar::mapPhar();define("PMIMPORTER_VERSION","'.$sver.'"); include "phar://pmimporter.phar/main.php"; __HALT_COMPILER(); ?>');
 
 foreach (['main.php'] as $f) {
 	echo ("- $f\n");
 	$p[$f] = file_get_contents($f);
 }
 
-$scripts= ["version","plugin","man"];
+$scripts= ["version","man"];
 
 $help = "Available sub-commands:\n";
 foreach (glob('scripts/*.php') as $fp) {
@@ -57,7 +53,7 @@ sort($scripts);
 $p['scripts/help.php'] = "Available sub-commands:\n\t".
 							  implode("\n\t",$scripts)."\n";
 
-$p['scripts/version.php'] = "<?php require_once(CLASSLIB_DIR.'version.txt');";
+$p['scripts/version.php'] = $version."\n";
 $p['scripts/man.php'] = file_get_contents('README.md');
 
 $dirs=['classlib'];
@@ -80,32 +76,8 @@ while(count($dirs)) {
 	closedir($dh);
 }
 
-$pmversion = preg_replace('/\s*pmimporter\s*/','',file_get_contents("version.txt"));
-$yml = file_get_contents("plugin/plugin.yml");
-$yml = str_replace("<PMIMPORTER>",$pmversion,$yml);
-$p["plugin.yml"] = $yml;
-if (preg_match('/\n\s*version: ([^\s]+)\s*\n/',$yml,$mv)) {
-	echo "Plugin Version: $mv[1]\n";
-	$p['scripts/plugin.php'] = "ImportMap v$mv[1]\n";
-} else {
-	$p['scripts/plugin.php'] = "generic ImportMap\n";
-}
-
-if ($plug) {
-	echo("Adding sources...\n");
-	$cnt = 0;
-	foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($plug)) as $s){
-		if (!is_file($s)) continue;
-		$cnt++;
-		$d = substr($s,strlen($plug));
-		if ($d == "plugin.yml") continue;
-		echo("  [$cnt] $d\n");
-		$p->addFile(realpath($s),$d);
-	}
-}
-
 // COMMENTED THIS OUT AS COMPRESSING WAS GENERATING CORRUPTED ARCHIVES!
-//$p->compressFiles(Phar::GZ);
+$p->compressFiles(Phar::GZ);
 
 //Stop buffering write requests to the Phar archive, and save changes to disk
 $p->stopBuffering();

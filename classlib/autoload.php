@@ -1,8 +1,6 @@
 <?php
 if (!defined('CLASSLIB_DIR')) {
 	define('CLASSLIB_DIR',dirname(realpath(__FILE__)).'/');
-	define('EXTERNAL_OVL',dirname(CLASSLIB_DIR).'/ovl/');
-	define('EXTERNAL_PM',dirname(CLASSLIB_DIR).'/pocketmine/');
 	// Report all PHP errors
 	error_reporting(E_ALL);
 }
@@ -15,16 +13,6 @@ function __autoload($classname) {
 		if (method_exists($classname,'__init')) $classname::__init();
 		return;
 	}
-	if (is_readable(EXTERNAL_OVL.$file)) {
-		fwrite(STDERR,"local-override: $classname\n");
-		require_once(EXTERNAL_OVL.$file);
-		return;
-	}
-	if (is_readable(EXTERNAL_PM.$file)) {
-		fwrite(STDERR,"external-pmclass: $classname\n");
-		require_once(EXTERNAL_PM.$file);
-		return;
-	}
 	require_once($file);
 }
 
@@ -32,11 +20,9 @@ function __autoload($classname) {
 //define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Binary::BIG_ENDIAN : Binary::LITTLE_ENDIAN));
 define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? 0x00 : 0x01));
 define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
-
 define("NL","\n");
 
-define("PMIMPORTER_VERSION",preg_replace('/^\s+/','',preg_replace('/\s+$/','',file_get_contents(CLASSLIB_DIR.'version.txt')))
-);
+if (!defined("PMIMPORTER_VERSION")) define("PMIMPORTER_VERSION","2.0dev0-unknown");
 
 if(version_compare("5.6.0", PHP_VERSION) > 0)
 	die("PHP Version >5.6.0 required - (Using ".PHP_VERSION.")\n");

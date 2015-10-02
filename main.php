@@ -26,7 +26,7 @@ if ($argv[0] == "man") {
 	exit;
 }
 
-if (in_array($argv[0],array("version","plugin","help"))) {
+if (in_array($argv[0],array("version","help"))) {
 	require_once("phar://pmimporter.phar/scripts/$argv[0].php");
 	require_once(CLASSLIB_DIR.'autoload.php');
 	exit;

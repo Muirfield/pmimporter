@@ -1,17 +1,11 @@
 <?php
 namespace pmimporter;
-use pocketmine\math\Vector3;
+//use pmsrc\math\Vector3;
 
 interface LevelFormat {
 	const ORDER_YZX = 0;
 	const ORDER_ZXY = 1;
 
-	/**
-	 * @param string $path
-	 * @param bool $ro
-	 * @param mixed $settings
-	 */
-	public function __construct($path,$ro=true,$settings=null);
 	/**
 	 * Returns the full provider name, like "anvil" or "mcregion", will be used
 	 * to find the correct format.
@@ -29,48 +23,97 @@ interface LevelFormat {
 	 * @return true
 	 */
 	public static function isValid($path);
+
+	/**
+	 * @return int
+	 */
+	public static function getProviderOrder();
+	/**
+	 * @return  bool
+	 */
+	public static function writeable();
+	/**
+	 * Create a new LevelFormat object.  If $settings is null, the level
+	 * is assumed exist already.  If a new level needs to be created, the
+	 * $settings array should be filled with:
+	 *
+	 * - spawn (Vector3): spawn point
+	 * - seed (int): seed for generator
+	 * - generator (str): terrain generator name
+	 * - presets (str): terrain generator preset options
+	 *
+	 * @param str $path
+	 * @param mixed[]|null $settings
+	 */
+	public function __construct($path, $settings = null);
+
+	/**
+	 * Returns the generator name
+	 *
+	 * @return str
+	 */
+	public function getGenerator();
+	/**
+	 * @return str
+	 */
+	public function getPresets();
+	/**
+	 * @return int
+	 */
+	public function getSeed();
+	/**
+	 * @return Vector3
+	 */
+	public function getSpawn();
+	/**
+	 * Returns an array with [x,z] chunks
+	 * @return array
+	 */
+	public function getChunks();
+	/**
+	 * @param int $cX
+	 * @param int $cZ
+	 * @param str $data
+	 */
+	public function writeChunk($cX,$cZ,$data);
+	/**
+	 * @param int $cX
+	 * @param int $cZ
+	 * @return str
+	 */
+	public function readChunk($cX,$cZ);
+	/**
+	 * @param int $cX
+	 * @param int $cZ
+	 * @return Chunk
+	 */
+	public function getChunk($cX,$cZ);
+
+
+  /////////////////////////////////////////////////////////////////////////
 	/**
 	 * Generate the needed files in the path given
 	 *
-	 * @param string  $path
-	 * @param string  $name
+	 * @param string  path
+	 * @param string  name
 	 * @param Vector3 $spawn
 	 * @param int     $seed
 	 * @param string  $generator
 	 * @param array[] $options
 	 */
-	public static function generate($path, $name, Vector3 $spawn, $seed, $generator, array $options = []);
+//	public static function generate($path, $name, Vector3 $spawn, $seed, $generator, array $options = []);
 	/** @return string */
-	public function getPath();
-	/**
-	 * Returns the generator name
-	 *
-	 * @return string
-	 */
-	public function getGenerator();
+	//public function getPath();
 
-	/**
-	 * @return array
-	 */
-	public function getGeneratorOptions();
 	/**
 	 * @return string
 	 */
-	public function getName();
-	/**
-	 * @return int
-	 */
-	public function getSeed();
-
-	/**
-	 * @return Vector3
-	 */
-	public function getSpawn();
+	//public function getName();
 
 	/**
 	 * @return [] region list
 	 */
-	public function getRegions();
+	//public function getRegions();
 
 	/**
 	 * @param $x
@@ -78,5 +121,5 @@ interface LevelFormat {
 	 *
 	 * @return RegionLoader
 	 */
-	public function getRegion($x, $z);
+	//public function getRegion($x, $z);
 }

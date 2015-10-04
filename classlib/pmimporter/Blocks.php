@@ -1,23 +1,14 @@
 <?php
 namespace pmimporter;
-use pmimporter\ImporterException;
+use pmimporter\Utils;
 
 abstract class Blocks {
 	protected static $blockIds = [];
 	protected static $blockNames = [];
-	protected static $tileIds = [];
-	protected static $blockConv = [];
+	public static $trTab = [];
 
 	const INVALID_BLOCK = 248;
 
-	public static function from_camel_case($input) {
-		preg_match_all('!([A-Z][A-Z0-9]*(?=$|[A-Z][a-z0-9])|[A-Za-z][a-z0-9]+)!', $input, $matches);
-		$ret = $matches[0];
-		foreach ($ret as &$match) {
-			$match = $match == strtoupper($match) ? strtolower($match) : lcfirst($match);
-		}
-		return implode('_', $ret);
-	}
 	public static function __init() {
 		if (count(self::$blockIds)) return; // Only read them once...
 
@@ -42,25 +33,16 @@ abstract class Blocks {
 				self::$blockIds[$name] = $code;
 
 				if ($code >= 0) {
-					$cname = strtoupper(self::from_camel_case($name));
+					$cname = strtoupper(Utils::from_camel_case($name));
 					define("BL_".$cname,$code);
 				} else {
-					self::$blockConv[-$code] = isset($ln[0]) ? $ln[0] : self::INVALID_BLOCK;
+					self::$trTab[chr(-$code)] = isset($ln[0]) ? chr($ln[0]) : chr(self::INVALID_BLOCK);
 				}
 			}
 			fclose($fp);
 		} else {
-			throw new ImporterException("Unable to read blocks.txt\n");
+			die("Unable to read blocks.txt\n");
 		}
-
-		foreach (["Sign","Chest","Furnace"] as $tile) {
-			self::$tileIds[$tile] = $tile;
-			define("TID_".strtoupper(self::from_camel_case($tile)),$tile);
-		}
-	}
-	public static function getTileId($id) {
-		if (isset(self::$tileIds[$id])) return self::$tileIds[$id];
-		return null;
 	}
 	public static function getBlockById($id) {
 		if (isset(self::$blockNames[$id])) return self::$blockNames[$id];
@@ -75,12 +57,6 @@ abstract class Blocks {
 		if ($cid == $nid) return;
 		if ($cid < 0) $cid = -$cid;
 		if ($nid < 0) return;
-		self::$blockConv[$cid] = $nid;
-	}
-
-	public static function xlateBlock($id) {
-		if (isset(self::$blockConv[$id])) return self::$blockConv[$id];
-		if (isset(self::$blockNames[$id])) return $id;
-		return self::INVALID_BLOCK;
+		self::$blockConv[chr($cid)] = chr($nid);
 	}
 }

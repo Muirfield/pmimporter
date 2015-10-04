@@ -38,6 +38,9 @@ class Binary{
 	const DATA_TYPE_ROTATION = 7;
 	const DATA_TYPE_LONG = 8;
 
+
+
+
 	/**
 	 * Reads a 3-byte big-endian number
 	 *
@@ -440,3 +443,4 @@ class Binary{
 	}
 
 }
+define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Binary::BIG_ENDIAN : Binary::LITTLE_ENDIAN));

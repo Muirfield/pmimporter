@@ -4,40 +4,73 @@ if (!defined('CLASSLIB_DIR'))
 
 use pmimporter\LevelFormatManager;
 use pmimporter\anvil\Anvil;
-use pmimporter\mcregion\McRegion;
 use pmimporter\mcpe020\McPe020;
 use pmimporter\pm13\Pm13;
-use pmimporter\Chunk;
-use pmimporter\Blocks;
-use pocketmine\nbt\tag\Double;
-use pocketmine\nbt\tag\Int;
+use pmimporter\mcregion\McRegion;
+use pmimporter\leveldb\LevelDB;
+
+define('CMD',array_shift($argv));
+// Handle options
+$minx = $minz = $maxx = $maxz = null;
+$chkchunks = false;
+while (count($argv) > 0) {
+	if (substr($argv[0],0,2) != "--") break;
+	$opt = array_shift($argv);
+	if (($val = preg_replace('/^--min-x=/','',$opt)) != $opt) {
+		$minx = (int)$val;
+	} elseif (($val = preg_replace('/^--max-x=/','',$opt)) != $opt) {
+		$maxx = (int)$val;
+	} elseif (($val = preg_replace('/^--min-z=/','',$opt)) != $opt) {
+		$minz = (int)$val;
+	} elseif (($val = preg_replace('/^--max-z=/','',$opt)) != $opt) {
+		$maxz = (int)$val;
+	} elseif (($val = preg_replace('/^--x=/','',$opt)) != $opt) {
+		$minx = $maxx = (int)$val;
+	} elseif (($val = preg_replace('/^--z=/','',$opt)) != $opt) {
+		$minz = $maxz = (int)$val;
+	} elseif ($opt == "--check-chunks") {
+		$chkchunks = true;
+	} elseif ($opt == "--no-check-chunks") {
+		$chkchunks = false;
+	} else {
+		die("Invalid option: $opt\n");
+	}
+}
+
+
+$wpath=array_shift($argv);
+if (!isset($wpath)) die("No path specified\n");
+if (!file_exists($wpath)) die("$wpath: does not exist\n");
 
 
 LevelFormatManager::addFormat(Anvil::class);
 LevelFormatManager::addFormat(McRegion::class);
-LevelFormatManager::addFormat(McPe020::class);
-LevelFormatManager::addFormat(Pm13::class);
+//LevelFormatManager::addFormat(McPe020::class);
+//LevelFormatManager::addFormat(Pm13::class);
+//if (extension_loaded("leveldb")) LevelFormatManager::addFormat(LevelDB::class);
 
-define('CMD',array_shift($argv));
-$wpath=array_shift($argv);
-if (!isset($wpath)) die("No world path specified\n");
-$wpath = preg_replace('/\/*$/',"",$wpath).'/';
-if (!is_dir($wpath)) die("$wpath: not found\n");
+$fmt = LevelFormatManager::getFormat($wpath);
+if ($fmt === null) die("$wpath: unrecognized format\n");
+$level  = new $fmt($wpath);
+echo "FORMAT:    ".$level::getFormatName()."\n";
+echo "SEED:      ".$level->getSeed()."\n";
+echo "Generator: ".$level->getGenerator()."\n";
+echo "Presets:   ".$level->getPresets()."\n";
+$spawn = $level->getSpawn();
+echo "Spawn:     ".implode(',',[$spawn->getX(),$spawn->getY(),$spawn->getZ()])."\n";
 
-$provider = LevelFormatManager::getFormat($wpath);
-if (!$provider) die("$wpath: Format not recognized\n");
+$chunks = $level->getChunks();
+echo "Chunks:    ".count($chunks)."\n";
 
-$fmt = new $provider($wpath,true);
-echo "Path:      ".$fmt->getPath().NL;
-echo "Name:      ".$fmt->getName().NL;
-echo "Format:    ".$fmt::getFormatName().NL;
-echo "Seed:      ".$fmt->getSeed().NL;
-echo "Generator: ".$fmt->getGenerator().NL;
-$opts = $fmt->getGeneratorOptions();
-if (isset($opts["preset"])) echo "GenOpts:   ".$opts["preset"].NL;
-$spawn = $fmt->getSpawn();
-echo "Spawn:     ".implode(',',[$spawn->getX(),$spawn->getY(),$spawn->getZ()]).NL;
+if (!$chkchunks) exit(0);
+foreach ($chunks as $chunk) {
+	list($cx,$cz) = $chunk;
 
+	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+			 ($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz)) continue;
+}
+
+/*
 echo "Regions:";
 $regions = $fmt->getRegions();
 foreach ($regions as $pp) {
@@ -169,3 +202,4 @@ foreach ($argv as $ppx) {
 		echo "  $v:\t".$stats[$k].NL;
 	}
 }
+*/

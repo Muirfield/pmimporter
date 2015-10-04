@@ -5,20 +5,28 @@
 65 PrimedTnt
 66 FallingSand
 
+77 FishingRodHook
 80 Arrow
 81 Snowball
 82 ThrownEgg
 83 Minecart
 84 Painting
+85 GhastFireball
+90 Boat
 
-39 Silverfish
-38 Enderman
-37 Slime
-36 PigZombie
-35 Spider
-34 Skeleton
-33 Creeper
 32 Zombie
+33 Creeper
+34 Skeleton
+35 Spider
+36 PigZombie
+37 Slime
+38 Enderman
+39 Silverfish
+40 CaveSpider
+41 Ghast
+42 MagnaCube
+43 Blaze
+44 ZombieVillager
 
 10 Chicken
 11 Cow
@@ -26,5 +34,10 @@
 13 Sheep
 14 Wolf
 16 MushroomCow
+17 Squid
+19 Bat
+20 IronGolem
+21 SnowGolem
+22 Ocelot
 
 15 Villager

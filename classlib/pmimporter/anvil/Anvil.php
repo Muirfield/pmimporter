@@ -1,41 +1,29 @@
 <?php
 namespace pmimporter\anvil;
-use pmimporter\mcregion\McRegion;
-use pmimporter\anvil\RegionLoader;
 
-class Anvil extends McRegion {
+use pmimporter\generic\PcFormat;
+
+class Anvil extends PcFormat {
 	public static function getFormatName() {
 		return "anvil";
 	}
 	public static function isValid($path) {
-		$isValid = (file_exists($path."/level.dat") && is_dir($path."/region/"));
-		if ($isValid) {
-			$files = glob($path."/region/*.mc*");
-			foreach($files as $f) {
-				if (substr($f,-4) != ".mca") {// not Anvil...
-					$isValid = false;
-					break;
-				}
-			}
-		}
-		return $isValid;
+		if (!file_exists($path."/level.dat") || !is_dir($path."/region/")) return false;
+		$files = glob($path."/region/*.mca");
+		return $files !== false && count($files) != 0;
 	}
-	public function getRegions() {
-		if ($this->regions === null) {
-			$this->regions = [];
-			$files = glob($this->getPath()."region/r.*.mca");
-			foreach ($files as $f) {
-				$pp = [];
-				if (preg_match('/r\.(-?\d+)\.(-?\d+)\.mca$/',$f,$pp)) {
-					array_shift($pp);
-					$this->regions[$pp[0].",".$pp[1]] = $pp;
-				}
-			}
-		}
-		return $this->regions;
+	public static function getProviderOrder() {
+		return self::ORDER_YZX;
+	}
+	public static function writeable() {
+		return false;
+	}
+	public function __construct($path, $settings = null) {
+		$this->initFormat(self::class, $path, $settings);
 	}
 
-	public function getRegion($x,$z) {
-		return new RegionLoader($this,$x,$z,"mca",$this->readOnly);
+	public function getChunk($cx,$cz) {
+		$data = $this->readChunk($cx,$cz);
+		return AnvilChunk::fromBinary($data);
 	}
 }

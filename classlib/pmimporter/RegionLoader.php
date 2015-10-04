@@ -1,11 +1,10 @@
 <?php
-namespace pmimporter\generic;
-use pmimporter\ImporterException;
+namespace pmimporter;
 use pmimporter\LevelFormat;
-use pocketmine\utils\Binary;
+use pmsrc\utils\Binary;
 
 
-abstract class RegionLoader {
+class RegionLoader {
 	const VERSION = 1;
 	const COMPRESSION_GZIP = 1;
 	const COMPRESSION_ZLIB = 2;
@@ -20,59 +19,42 @@ abstract class RegionLoader {
 	protected $lastSector;
 	protected $formatProvider;
 	protected $locationTable = [];
-	protected $readOnly;
+	protected $dirty;
 
 	protected static function getChunkOffset($x, $z){
 		return $x + ($z << 5);
 	}
 
-	abstract public function readChunk($x,$z);
-	abstract public function newChunk($cX,$cZ);
-	abstract public function writeChunk($oX,$oZ,$chunk);
-
-	public function __construct(LevelFormat $fmt,$rX,$rZ,$ext,$ro = false) {
+	public function __construct($path,$rX,$rZ,$ext) {
+		$this->dirty = false;
 		$this->x = $rX;
 		$this->z = $rZ;
-		$this->formatProvider = $fmt;
-		$this->readOnly = $ro;
 
-		$this->filePath = $this->formatProvider->getPath()."region/r.$rX.$rZ.$ext";
-		$exists = file_exists($this->filePath);
-		if ($ro) {
-			if (!$exists) {
-				throw new ImporterException("Region $rX,$rZ does not exist!");
-			}
-			//echo ("OPENING $this->filePath ReadOnly\n");
+		$this->filePath = $path."/region/r.$rX.$rZ.$ext";
+		if (file_exists($this->filePath)) {
 			$this->filePointer = fopen($this->filePath,"rb");
-		} else {
-			//echo ("OPENING $this->filePath RW\n");
-			touch($this->filePath);
-			$this->filePointer = fopen($this->filePath,"r+b");
-			stream_set_write_buffer($this->filePointer,1024*16); // 16KB
-		}
-		stream_set_read_buffer($this->filePointer,1024*16); // 16KB
-		if (!$exists) {
-			$this->createBlank();
-		} else {
+			stream_set_read_buffer($this->filePointer,1024*16); // 16KB
 			$this->loadLocationTable();
+		} else {
+			$this->filePointer = fopen($this->filePath,"w+b");
+			stream_set_write_buffer($this->filePointer,1024*16); // 16KB
+			stream_set_read_buffer($this->filePointer,1024*16); // 16KB
+			$this->createBlank();
 		}
 	}
-
 	public function __destruct() {
 		if(is_resource($this->filePointer)) {
-			if (!$this->readOnly) $this->writeLocationTable();
+			if ($this->dirty) $this->writeLocationTable();
 			fclose($this->filePointer);
 		}
 	}
-
 	protected function isChunkPresent($index) {
 		return !($this->locationTable[$index][0] === 0 or $this->locationTable[$index][1] === 0);
 	}
 	public function chunkExists($x,$z) {
 		return $this->isChunkPresent(self::getChunkOffset($x,$z));
 	}
-
-	public function readChunkData($x,$z) {
+	public function readChunk($x,$z) {
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096) return null;
 		if(!$this->isChunkPresent($index)) return null;
@@ -82,11 +64,10 @@ abstract class RegionLoader {
 		if($length <= 0 or $length > self::MAX_SECTOR_LENGTH) return null;
 		return fread($this->filePointer,$length-1);
 	}
-
 	public function close(){
-		if (!$this->readOnly) $this->writeLocationTable();
+		if (!$this->dirty) $this->writeLocationTable();
 		fclose($this->filePointer);
-		$this->levelProvider = null;
+		$this->filePointer = null;
 	}
 
 	protected function createBlank(){
@@ -121,7 +102,19 @@ abstract class RegionLoader {
 			}
 		}
 	}
+
+	protected function reopenRW() {
+		// Make sure filePointer is writeable...
+		$meta = stream_get_meta_data($this->filePointer);
+		if ($meta["mode"] != "rb") return;// Already R/W
+		fclose($this->filePointer);
+		$this->filePointer = fopen($this->filePath,"r+b");
+		stream_set_write_buffer($this->filePointer,1024*16); // 16KB
+		stream_set_read_buffer($this->filePointer,1024*16); // 16KB
+	}
+
 	protected function writeLocationTable(){
+		$this->reopenRW();
 		$write = [];
 
 		for($i = 0; $i < 1024; ++$i){
@@ -142,15 +135,13 @@ abstract class RegionLoader {
 		return $this->z;
 	}
 
-	protected function writeChunkData($oX,$oZ,$data) {
-		if ($this->readOnly) {
-			throw new ImporterException("Error trying to write chunk($oX,$oZ) to read-only Level");
-		}
+	public function writeChunk($oX,$oZ,$data) {
 
 		$length = strlen($data) + 1;
 		if($length + 4 > self::MAX_SECTOR_LENGTH){
-			throw new ImporterException(__CLASS__."::".__METHOD__.": Chunk is too big! ".($length + 4)." > ".self::MAX_SECTOR_LENGTH);
+			die(__CLASS__."::".__METHOD__.": Chunk is too big! ".($length + 4)." > ".self::MAX_SECTOR_LENGTH."\n");
 		}
+		$this->reopenRW();
 		$sectors = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($oX, $oZ);
 
@@ -162,6 +153,20 @@ abstract class RegionLoader {
 
 		fseek($this->filePointer, $this->locationTable[$index][0] << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $data, $sectors << 12, "\x00", STR_PAD_RIGHT));
-		// Don't update locationTable until the very end!
+		$this->dirty = true;	// Make sure the location table gets updated at the end...
+	}
+
+	public function addChunks(array &$chunks) {
+		$rX = $this->getX() << 5;
+		$rZ = $this->getZ() << 5;
+		$c = 0;
+		for ($x = 0; $x < 32; $x++) {
+			for ($z = 0; $z < 32; $z++) {
+				if (!$this->chunkExists($x,$z)) continue;
+				$chunks[] = [ $rX + $x, $rZ + $z ];
+				++$c;
+			}
+		}
+		return $c;
 	}
 }

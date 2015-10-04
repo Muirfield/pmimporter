@@ -2,6 +2,35 @@
 if (!defined('CLASSLIB_DIR'))
 	require_once(dirname(realpath(__FILE__)).'/../classlib/autoload.php');
 
+use pmimporter\LevelFormatManager;
+use pmimporter\anvil\Anvil;
+use pmimporter\mcpe020\McPe020;
+use pmimporter\pm13\Pm13;
+use pmimporter\mcregion\McRegion;
+use pmimporter\leveldb\LevelDB;
+
+define('CMD',array_shift($argv));
+$wpath=array_shift($argv);
+if (!isset($wpath)) die("No path specified\n");
+if (!file_exists($wpath)) die("$wpath: does not exist\n");
+
+LevelFormatManager::addFormat(Anvil::class);
+LevelFormatManager::addFormat(McRegion::class);
+LevelFormatManager::addFormat(McPe020::class);
+LevelFormatManager::addFormat(Pm13::class);
+if (extension_loaded("leveldb")) LevelFormatManager::addFormat(LevelDB::class);
+
+$fmt = LevelFormatManager::getFormat($wpath);
+if ($fmt === null) die("$wpath: unrecognized format\n");
+echo "FORMAT: $fmt\n";
+$level  = new $fmt($wpath);
+echo "SEED: ".$level->getSeed()."\n";
+echo "Generator: ".$level->getGenerator()."\n";
+echo "Presets: ".$level->getPresets()."\n";
+echo "Spawn: ".$level->getSpawn()."\n";
+
+
+/*
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\Int;
 use pocketmine\nbt\tag\String;
@@ -9,10 +38,6 @@ use pocketmine\nbt\tag\Long;
 use pocketmine\nbt\tag\Compound;
 use pocketmine\utils\Binary;
 
-define('CMD',array_shift($argv));
-$wpath=array_shift($argv);
-if (!isset($wpath)) die("No path specified\n");
-if (!is_dir($wpath)) die("$wpath: does not exist\n");
 $lvfile = $wpath."/level.dat";
 if (!is_file($lvfile)) die("$wpath: Missing level.dat\n");
 
@@ -115,3 +140,4 @@ echo "Seed:      ".$levelData["RandomSeed"].NL;
 echo "Generator: ".$levelData["generatorName"]." v".$levelData["generatorVersion"].NL;
 if (isset($levelData["generatorOptions"]))
 	echo "GenPreset: ".$levelData["generatorOptions"].NL;
+*/

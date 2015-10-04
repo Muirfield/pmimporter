@@ -11,6 +11,11 @@
 
 5. save blocks
 
+- load chunk
+- save chunk
+
+
+
 Conversion using strtr or strreplace ... test performance
 Format:
 
@@ -40,6 +45,33 @@ Chunk
   - bool isPopulated
   - bool isLightPopulated
 
+new Chunk - create empty chunk
+fromBinary - load Chunk
+static-CopyChunk
+getXXX - always returns ZXY order
+getRawXXX - can return in any order
+getBlocks - getRawBlocks | setBlocks - setRawBlocks
+getMeta - getRawMeta | setMeta - setRawMeta
+getBlockLight - getRawBlockLight | setBlockLight - setRawBlockLight
+getSkyLight - getRawSkyLight | setSkyLight - setRawSkyLight
+getBiomeColors | setBiomeColors
+getHeightMap | setHeightMap
+getEntities |  setEntities
+getTiles | setTiles
+isGenerated | setGenerated(bool)
+isPopulated | setPopulated(bool)
+isLightPopulated | setLightPopulated
+
+//- Anvil: shift when loading?
+shiftBlocks(y) - shift blocks up/down
+translateBlocks(data) - convert blocks
+
+Chunk
+  StandardChunk  
+    AnvilChunk
+  ReadOnly
+    OldChunk
+    PmfChunk
 
 
 level_dat

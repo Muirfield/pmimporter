@@ -11,7 +11,6 @@ if (!isset($file)) die("No file specified\n");
 if (!is_file($file)) die("$file: does not exist\n");
 
 $dat = file_get_contents($file);
-echo Binary::readLInt(substr($dat,0,4))."\n";
 
 if ((Binary::readLInt(substr($dat,0,4)) == 2
 		|| Binary::readLInt(substr($dat,0,4)) == 3
@@ -33,6 +32,7 @@ if ((Binary::readLInt(substr($dat,0,4)) == 2
 	echo "MCPC\n";
 	$nbt = new NBT(NBT::BIG_ENDIAN);
 	$nbt->readCompressed($dat);
+	
 }
 $levelData = $nbt->getData();
-//print_r($levelData);
+print_r($levelData);

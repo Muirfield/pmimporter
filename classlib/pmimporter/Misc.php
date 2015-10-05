@@ -21,7 +21,7 @@ abstract class Misc {
 			if ($ln == '') continue;	// Skip empty lines
 			$ln = preg_split('/\s+/',$ln,3);
 			if ($ln < 2) continue;
-			$table = $ln;
+			$table[] = $ln;
 		}
 		fclose($fp);
 		if (!count($table)) return false;

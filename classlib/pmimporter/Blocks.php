@@ -28,7 +28,7 @@ abstract class Blocks {
 			$code = array_shift($ln);
 			$name = array_shift($ln);
 			$acode = $code < 0 ? -$code : $code;
-			self::$blockName[$acode] = $name;
+			self::$blockNames[$acode] = $name;
 			self::$blockIds[$name] = $acode;
 			$chr = chr($acode);
 			if ($code >= 0) {

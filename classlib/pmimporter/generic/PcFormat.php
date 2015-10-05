@@ -84,22 +84,21 @@ abstract class PcFormat implements LevelFormat {
 	}
 	public function getChunks() {
 		$chunks = [];
-		$files = glob($this->path."/region/r.*.mca");
+		$files = glob($this->path."/region/r.*.".$this->getFileExtension());
 		foreach ($files as $f) {
 			$pp = [];
-			if (!preg_match('/r\.(-?\d+)\.(-?\d+)\.mca$/',$f,$pp)) continue;
+			if (!preg_match('/r\.(-?\d+)\.(-?\d+)\.'.$this->getFileExtension().'$/',$f,$pp)) continue;
 			list(,$rx,$rz) = $pp;
-			$loader = new RegionLoader($this->path,$rx,$rz,"mca");
+			$loader = new RegionLoader($this->path,$rx,$rz,$this->getFileExtension());
 			$loader->addChunks($chunks);
 		}
 		return $chunks;
 	}
-
 	public function writeChunk($cX,$cZ,$data) {
 		$rX = $cX >> 5; $oX = $cX & 0x1f;
 		$rZ = $cZ >> 5; $oZ = $cZ & 0x1f;
 		$lock = new Lock($this->path."/level.dat",LOCK_EX);
-		$loader = new RegionLoader($this->path,$rX,$rZ,"mcr");
+		$loader = new RegionLoader($this->path,$rX,$rZ,$this->getFileExtension());
 		$loader->writeChunk($oX,$oZ,$data);
 		unset($loader);
 		unset($lock);
@@ -108,9 +107,10 @@ abstract class PcFormat implements LevelFormat {
 		$rX = $cX >> 5; $oX = $cX & 0x1f;
 		$rZ = $cZ >> 5; $oZ = $cZ & 0x1f;
 		$lock = new Lock($this->path."/level.dat");
-		$loader = new RegionLoader($this->path,$rX,$rZ,"mcr");
+		$loader = new RegionLoader($this->path,$rX,$rZ,$this->getFileExtension());
 		$chunk = $loader->readChunk($oX,$oZ);
 		unset($lock);
 		return $chunk;
 	}
+	abstract protected function getFileExtension();
 }

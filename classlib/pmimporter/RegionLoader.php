@@ -29,17 +29,20 @@ class RegionLoader {
 		$this->dirty = false;
 		$this->x = $rX;
 		$this->z = $rZ;
-
+		//echo __METHOD__.",".__LINE__."\n";//##DEBUG
+		//echo "rX=$rX rZ=$rZ\n";//##DEBUG
 		$this->filePath = $path."/region/r.$rX.$rZ.$ext";
 		if (file_exists($this->filePath)) {
 			$this->filePointer = fopen($this->filePath,"rb");
 			stream_set_read_buffer($this->filePointer,1024*16); // 16KB
 			$this->loadLocationTable();
+			//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 		} else {
 			$this->filePointer = fopen($this->filePath,"w+b");
 			stream_set_write_buffer($this->filePointer,1024*16); // 16KB
 			stream_set_read_buffer($this->filePointer,1024*16); // 16KB
 			$this->createBlank();
+			//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 		}
 	}
 	public function __destruct() {

@@ -17,16 +17,16 @@ class McrChunk extends PcChunk {
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();
-		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound) return null;
+		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)) return null;
 
 		$nbt = $chunk->Level;
 		$data = self::fromNBT($nbt);
 
-		if(isset($nbt->Entities) && $nbt->Entities instanceof Enum){
+		if(isset($nbt->Entities) && ($nbt->Entities instanceof Enum)) {
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$data["entities"] = $nbt->Entities->getValue();
 		}
-		if(isset($nbt->TileEntities) && $nbt->TileEntities instanceof Enum){
+		if(isset($nbt->TileEntities) && ($nbt->TileEntities instanceof Enum)) {
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$data["tiles"] = $nbt->TileEntities->getValue();
 		}
@@ -58,4 +58,5 @@ class McrChunk extends PcChunk {
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$writer->setData(new Compound("", ["Level" => $nbt]));
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+	}
 }

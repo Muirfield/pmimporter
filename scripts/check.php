@@ -69,7 +69,7 @@ foreach ($chunks as $chunk) {
 	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
 			 ($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz)) continue;
 
-	$chunk = $level->getChunk($cx,$cy);
+	$chunk = $level->getChunk($cx,$cz);
 }
 
 /*

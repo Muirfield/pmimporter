@@ -33,5 +33,7 @@ class McRegion extends PcFormat {
 		$data = $this->readChunk($cx,$cz);
     return McrChunk::fromBinary($data);
 	}
-
+	protected function getFileExtension() {
+		return "mcr";
+	}
 }

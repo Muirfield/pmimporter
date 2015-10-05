@@ -104,8 +104,8 @@
 96	Trapdoor
 97	MonsterEgg
 98	StoneBrick
-99	BrownMushroom
-100	RedMushroom
+99	BrownMushroomBlock
+100	RedMushroomBlock
 101	IronBars
 102	GlassPane
 103	Melon

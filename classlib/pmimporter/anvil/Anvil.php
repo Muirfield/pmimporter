@@ -22,9 +22,9 @@ class Anvil extends PcFormat {
 		$this->initFormat(self::class, $path, $settings);
 	}
 
-	public function getChunk($cx,$cz) {
-		$data = $this->readChunk($cx,$cz);
-		return AnvilChunk::fromBinary($data);
+	public function getChunk($cx,$cz,$yoff=0) {
+		$data = $this->readChunk($cx,$cz,$yoff);
+		return AnvilChunk::fromBinary($data,$yoff);
 	}
 	protected function getFileExtension() {
 		return "mca";

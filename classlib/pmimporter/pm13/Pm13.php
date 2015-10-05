@@ -61,4 +61,28 @@ class Pm13 implements LevelFormat {
 		}
 		return $chunks;
 	}
+	public function writeChunk($cX,$cZ,$data) {
+		die(__METHOD__.": NOT IMPLEMENTED\n");
+	}
+	public function readChunk($cX,$cZ) {
+		die(__METHOD__.": NOT IMPLEMENTED\n");
+	}
+	public function getChunk($cX,$cZ,$yoff=0) {
+		if ($yoff) die(__METHOD__.": YOFF!=0 NOT IMPLEMENTED\n");
+		$this->pmfLevel->loadChunk($cX,$cZ);
+		$chunk = $this->pmfLevel->getChunk($cX,$cZ);
+		$data = [
+			"x" => $x,
+			"z" => $z,
+			"blocks" => [],
+		];
+		for ($Y=0;$Y < $this->getData("height");$Y++) {
+			$data["blocks"][$Y] = substr($chunk[$Y],
+
+		}
+
+		16- bytes : blocks
+		8- bytes: meta
+
+	}
 }

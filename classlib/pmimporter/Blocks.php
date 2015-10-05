@@ -14,34 +14,28 @@ abstract class Blocks {
 
 		// Read block definitions
 		if (defined('CLASSLIB_DIR')) {
-			$fp = fopen(CLASSLIB_DIR."pmimporter/blocks.txt","r");
+			$tab = Misc::readTable(CLASSLIB_DIR."pmimporter/blocks.txt");
 		} else {
-			$fp = fopen(dirname(realpath(__FILE__))."/blocks.txt","r");
+			$tab = Misc::readTable(dirname(realpath(__FILE__))."/blocks.txt");
 		}
-		if ($fp) {
-			while (($ln = fgets($fp)) !== false) {
-				if (preg_match('/^\s*[#;]/',$ln)) continue; // Skip comments
-				$ln = preg_replace('/^\s+/','',$ln);
-				$ln = preg_replace('/\s+$/','',$ln);
-				if ($ln == '') continue;	// Skip empty lines
-				$ln = preg_split('/\s+/',$ln);
-				if ($ln < 2) continue;
-				$code = array_shift($ln);
-				$name = array_shift($ln);
+		if ($tab === null) die("Unable to read blocks.txt\n");
 
-				self::$blockNames[$code] = $name;
-				self::$blockIds[$name] = $code;
+		for($i=0;$i<256;++$i) {
+			self::$trTab[chr($i)] = chr(INVALID_BLOCK);
+		}
 
-				if ($code >= 0) {
-					$cname = strtoupper(Misc::from_camel_case($name));
-					define("BL_".$cname,$code);
-				} else {
-					self::$trTab[chr(-$code)] = isset($ln[0]) ? chr($ln[0]) : chr(self::INVALID_BLOCK);
-				}
+		foreach ($tab as $ln)	 {
+			$code = array_shift($ln);
+			$name = array_shift($ln);
+			$acode = $code < 0 ? -$code : $code;
+			self::$blockName[$acode] = $name;
+			self::$blockIds[$name] = $acode;
+			$chr = chr($acode);
+			if ($code >= 0) {
+				if (isset(self::$trTab[$chr])) unset(self::$trTab[$chr]);
+			} else {
+				if (count($ln)) self::$trTab[$chr] = chr((int)$ln[0]);
 			}
-			fclose($fp);
-		} else {
-			die("Unable to read blocks.txt\n");
 		}
 	}
 	public static function getBlockById($id) {
@@ -55,8 +49,7 @@ abstract class Blocks {
 	public static function addRule($cid,$nid) {
 		if ($cid === null || $nid === null) return;
 		if ($cid == $nid) return;
-		if ($cid < 0) $cid = -$cid;
 		if ($nid < 0) return;
-		self::$blockConv[chr($cid)] = chr($nid);
+		self::$trTab[chr($cid)] = chr($nid);
 	}
 }

@@ -27,6 +27,10 @@ class PocketChunkParser{
 	var $chunkLength = 86016; //21 * $sectorLength
 	var $map;
 
+  public function getParsedChunk($x,$z) {
+		return $this->map[$x][$z];
+	}
+
 	function __construct(){
 		$map = array();
 	}
@@ -95,7 +99,6 @@ class PocketChunkParser{
 		}
 		return Utils::writeLInt(strlen($chunk)).$chunk;
 	}
-
 	public function parseChunk($X, $Z){
 		$X = (int) $X;
 		$Z = (int) $Z;

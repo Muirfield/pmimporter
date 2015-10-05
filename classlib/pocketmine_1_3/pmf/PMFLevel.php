@@ -523,4 +523,7 @@ class PMFLevel extends PMF{
 	public function getAttr($attr) {
 	  return $this->levelData[$attr];
 	}
+  public function getChunk($X,$Z) {
+    return $this->chunks[$this->getIndex($X,$Z)];
+  }
 }

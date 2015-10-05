@@ -85,41 +85,9 @@ interface LevelFormat {
 	/**
 	 * @param int $cX
 	 * @param int $cZ
+	 * @param int $yoff
 	 * @return Chunk
 	 */
-	public function getChunk($cX,$cZ);
+	public function getChunk($cX,$cZ,$yoff=0);
 
-
-  /////////////////////////////////////////////////////////////////////////
-	/**
-	 * Generate the needed files in the path given
-	 *
-	 * @param string  path
-	 * @param string  name
-	 * @param Vector3 $spawn
-	 * @param int     $seed
-	 * @param string  $generator
-	 * @param array[] $options
-	 */
-//	public static function generate($path, $name, Vector3 $spawn, $seed, $generator, array $options = []);
-	/** @return string */
-	//public function getPath();
-
-	/**
-	 * @return string
-	 */
-	//public function getName();
-
-	/**
-	 * @return [] region list
-	 */
-	//public function getRegions();
-
-	/**
-	 * @param $x
-	 * @param $z
-	 *
-	 * @return RegionLoader
-	 */
-	//public function getRegion($x, $z);
 }

@@ -71,7 +71,7 @@ foreach ($chunks as $chunk) {
 	if ($qminz === null || $cz < $qminz) $qminz = $cz;
 	if ($qmaxz === null || $cz > $qmaxz) $qmaxz = $cz;
 }
-echo "Chunk region: ($qminx,$qminz)-($qmaxx,$qmaxz)\n";
+echo "Chunk area: ($qminx,$qminz)-($qmaxx,$qmaxz)\n";
 if (!$chkchunks) exit(0);
 $cnt = 0;
 function incr(&$stats,$attr) {
@@ -84,13 +84,6 @@ function incr(&$stats,$attr) {
 $stats = [];
 foreach ($chunks as $chunk) {
 	list($cx,$cz) = $chunk;
-	//var_dump($minx,$cx,$cx<$minx,($minx !== null && $cx < $minx));
-	//ob_start();
-	//$res = ($maxx !== null && $cx > $maxx);
-	//var_dump([$cx,$maxx,$res]);
-	//$a = ob_get_contents();
-	//ob_end_clean();
-	//echo strtr($a,"\n"," ")."\n";
 	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
 			 ($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
   //echo "($cx,$cz)\n";
@@ -137,12 +130,12 @@ if (isset($stats["Height:Count"]) && isset($stats["Height:Sum"])) {
 $sorted = array_keys($stats);
 natsort($sorted);
 foreach ($sorted as $k) {
-//	if (is_numeric($k)) {
-//		$v = Blocks::getBlockById($k);
-//		$v = $v !== null ? "$v ($k)" : "*Unsupported* ($k)";
-//	} else {
+	if (is_numeric($k)) {
+		$v = Blocks::getBlockById($k);
+		$v = $v !== null ? "$v ($k)" : "*Unsupported* ($k)";
+	} else {
 		$v = $k;
-//	}
+	}
 	echo "  $v:\t".$stats[$k]."\n";
 }
 

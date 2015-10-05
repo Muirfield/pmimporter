@@ -29,9 +29,9 @@ class McRegion extends PcFormat {
 	public function __construct($path, $settings = null) {
 		$this->initFormat(self::class, $path, $settings);
 	}
-	public function getChunk($cx,$cz) {
+	public function getChunk($cx,$cz,$yoff=0) {
 		$data = $this->readChunk($cx,$cz);
-    return McrChunk::fromBinary($data);
+    return McrChunk::fromBinary($data,$yoff);
 	}
 	protected function getFileExtension() {
 		return "mcr";

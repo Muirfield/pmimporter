@@ -44,7 +44,6 @@ $help = "Available sub-commands:\n";
 foreach (glob('scripts/*.php') as $fp) {
 	$f = preg_replace('/^scripts\//','',$fp);
 	$f = preg_replace('/\.php$/','',$f);
-	$f = preg_replace('/^pm/','',$f);
 	$scripts[] = $f;
 	echo "$fp as $f\n";
 	$p["scripts/$f.php"] = file_get_contents($fp);

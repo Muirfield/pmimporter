@@ -4,6 +4,7 @@ namespace pmimporter\generic;
 use pmimporter\LevelFormat;
 use pmimporter\LevelFormatManager;
 use pmimporter\RegionLoader;
+use pmimporter\Lock;
 
 use pmsrc\nbt\NBT;
 use pmsrc\nbt\tag\Byte;

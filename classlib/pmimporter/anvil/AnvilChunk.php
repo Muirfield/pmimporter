@@ -13,16 +13,11 @@ use pmsrc\nbt\tag\IntArray;
 use pmsrc\nbt\tag\Long;
 
 class AnvilChunk extends PcChunk {
-	const EmptyBlocks = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-	const EmptyMeta = "\x00\x00\x00\x00\x00\x00\x00\x00";
-	const EmptySkyLight = "\xff\xff\xff\xff\xff\xff\xff\xff";
-	const EmptyBlockLight = "\x00\x00\x00\x00\x00\x00\x00\x00";
-
 	static public function fromBinary($data, $yoff = 0) {
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();
-		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound) return null;
+		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)) return null;
 
 		$nbt = $chunk->Level;
 		$data = self::fromNBT($nbt);
@@ -42,7 +37,7 @@ class AnvilChunk extends PcChunk {
 		$data["skyLight"] = [];
 
 		if ($yoff == 0) {
-			if (isset($nbt->Sections) && ($nbt->Sections instanceof Enum) {
+			if (isset($nbt->Sections) && ($nbt->Sections instanceof Enum)) {
 				foreach ($this->nbt->Sections as $section) {
 					if (!($section instanceof Compound)) continue;
 					$y = (int)$section["Y"];

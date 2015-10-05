@@ -49,7 +49,7 @@ abstract class BaseChunk implements Chunk {
 		$this->zPos = isset($data["z"]) ? $data["z"] : 0;
 
 		$this->blocks = isset($data["blocks"]) ? $data["blocks"] : str_repeat("\x00", 32768);
-		$this->meta = isset($data["meta"]) ? $data["meta"] : str_repeat("\x00", 16384;
+		$this->meta = isset($data["meta"]) ? $data["meta"] : str_repeat("\x00", 16384);
 		$this->blockLight = isset($data["blockLight"]) ? $data["blockLight"] : str_repeat("\x00", 16384);
 		$this->skyLight = isset($data["skyLight"]) ? $data["skyLight"] : str_repeat("\xff", 16384);
 		$this->biomeColors = isset($data["biomeColors"]) ? $data["biomeColors"] : array_fill(0,256,Binary::readInt("\x00\x85\xb2\x4a"));

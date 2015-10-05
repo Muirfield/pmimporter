@@ -20,7 +20,7 @@ interface Chunk {
 	 * - bool isLightPopulated (optional)
 	 * @param $data - input to initialize chunk
 	 */
-	public function _construct(array &$data);
+	public function __construct(array &$data);
 	static public function fromBinary($data, $yoff = 0);
 	public function toBinary();
 	public function getBlocks();

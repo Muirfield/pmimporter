@@ -13,7 +13,7 @@ use pmsrc\nbt\tag\IntArray;
 use pmsrc\nbt\tag\Long;
 
 class AnvilChunk extends PcChunk {
-	static public function fromBinary($data, $yoff = 0) {
+	static public function fromBinary($binary, $yoff = 0) {
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();
@@ -38,7 +38,7 @@ class AnvilChunk extends PcChunk {
 
 		if ($yoff == 0) {
 			if (isset($nbt->Sections) && ($nbt->Sections instanceof Enum)) {
-				foreach ($this->nbt->Sections as $section) {
+				foreach ($nbt->Sections as $section) {
 					if (!($section instanceof Compound)) continue;
 					$y = (int)$section["Y"];
 					$data["blocks"][$y] = (string)$nbt["Blocks"];
@@ -50,6 +50,7 @@ class AnvilChunk extends PcChunk {
 		} else {
 			die("LOADING OFFSETS NOT IMPLEMENTED!\n");
 		}
+		return new AnvilChunk($data);
 	}
 	public function __construct(array &$data) {
 		if (isset($data["blocks"]) && !is_array($data["blocks"])) {

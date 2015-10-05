@@ -1,6 +1,6 @@
 <?php
 namespace pmimporter;
-use pmimporter\Utils;
+use pmimporter\Misc;
 
 abstract class Blocks {
 	protected static $blockIds = [];
@@ -33,7 +33,7 @@ abstract class Blocks {
 				self::$blockIds[$name] = $code;
 
 				if ($code >= 0) {
-					$cname = strtoupper(Utils::from_camel_case($name));
+					$cname = strtoupper(Misc::from_camel_case($name));
 					define("BL_".$cname,$code);
 				} else {
 					self::$trTab[chr(-$code)] = isset($ln[0]) ? chr($ln[0]) : chr(self::INVALID_BLOCK);

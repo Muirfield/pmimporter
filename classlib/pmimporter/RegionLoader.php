@@ -58,6 +58,7 @@ class RegionLoader {
 		return $this->isChunkPresent(self::getChunkOffset($x,$z));
 	}
 	public function readChunk($x,$z) {
+		//echo  __METHOD__.",".__LINE__."\n";//##DEBUG
 		$index = self::getChunkOffset($x, $z);
 		if($index < 0 or $index >= 4096) return null;
 		if(!$this->isChunkPresent($index)) return null;
@@ -65,6 +66,7 @@ class RegionLoader {
 		$length = Binary::readInt(fread($this->filePointer, 4));
 		$compression = ord(fgetc($this->filePointer));
 		if($length <= 0 or $length > self::MAX_SECTOR_LENGTH) return null;
+		//echo " READ($x,$z): ".$length." bytes\n";//##DEBUG
 		return fread($this->filePointer,$length-1);
 	}
 	public function close(){
@@ -128,6 +130,7 @@ class RegionLoader {
 		}
 		fseek($this->filePointer, 0);
 		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
+		$this->dirty = false;
 	}
 
 	public function getX(){

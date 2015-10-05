@@ -62,25 +62,18 @@ echo "Spawn:     ".implode(',',[$spawn->getX(),$spawn->getY(),$spawn->getZ()])."
 $chunks = $level->getChunks();
 echo "Chunks:    ".count($chunks)."\n";
 
-if (!$chkchunks) exit(0);
+$qminx = $qmaxx = $qminz = $qmaxz = null;
 foreach ($chunks as $chunk) {
 	list($cx,$cz) = $chunk;
 
-	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
-			 ($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz)) continue;
-
-	$chunk = $level->getChunk($cx,$cz);
+	if ($qminx === null || $cx < $qminx) $qminx = $cx;
+	if ($qmaxx === null || $cx > $qmaxx) $qmaxx = $cx;
+	if ($qminz === null || $cz < $qminz) $qminz = $cz;
+	if ($qmaxz === null || $cz > $qmaxz) $qmaxz = $cz;
 }
-
-/*
-echo "Regions:";
-$regions = $fmt->getRegions();
-foreach ($regions as $pp) {
-	list($rX,$rZ) = $pp;
-	echo " $rX,$rZ";
-}
-echo "\n";
-
+echo "Chunk region: ($qminx,$qminz)-($qmaxx,$qmaxz)\n";
+if (!$chkchunks) exit(0);
+$cnt = 0;
 function incr(&$stats,$attr) {
 	if (isset($stats[$attr])) {
 		++$stats[$attr];
@@ -88,36 +81,72 @@ function incr(&$stats,$attr) {
 		$stats[$attr] = 1;
 	}
 }
-
-function analyze_chunk(Chunk $chunk,&$stats) {
+$stats = [];
+foreach ($chunks as $chunk) {
+	list($cx,$cz) = $chunk;
+	//var_dump($minx,$cx,$cx<$minx,($minx !== null && $cx < $minx));
+	//ob_start();
+	//$res = ($maxx !== null && $cx > $maxx);
+	//var_dump([$cx,$maxx,$res]);
+	//$a = ob_get_contents();
+	//ob_end_clean();
+	//echo strtr($a,"\n"," ")."\n";
+	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+			 ($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
+  //echo "($cx,$cz)\n";
+	++$cnt;
+	$chunk = $level->getChunk($cx,$cz);
 	if ($chunk->isPopulated()) incr($stats,"-populated");
 	if ($chunk->isGenerated()) incr($stats,"-generated");
-
-	for ($x = 0;$x < 16;$x++) {
-		for ($z=0;$z < 16;$z++) {
-			for ($y=0;$y < 128;$y++) {
-				list($id,$meta) = $chunk->getBlock($x,$y,$z);
-				incr($stats,$id);
-			}
-			$height = $chunk->getHeightMap($x,$z);
-			if (!isset($stats["Height:Max"])) {
-				$stats["Height:Max"] = $height;
-			} elseif ($height > $stats["Height:Max"]) {
-				$stats["Height:Max"] = $height;
-			}
-			if (!isset($stats["Height:Min"])) {
-				$stats["Height:Min"] = $height;
-			} elseif ($height < $stats["Height:Min"]) {
-				$stats["Height:Min"] = $height;
-			}
-			if (!isset($stats["Height:Sum"])) {
-				$stats["Height:Sum"] = $height;
-			} else {
-				$stats["Height:Sum"] += $height;
-			}
-			incr($stats,"Height:Count");
+	if ($chunk->isLightPopulated()) incr($stats,"-lighted");
+	$blocks = $chunk->getRawBlocks();
+	if (!is_array($blocks)) $blocks = [$blocks];
+	foreach ($blocks as $str) {
+		for ($i=0,$l = strlen($str);$i<$l;$i++) {
+			incr($stats,ord($str{$i}));
 		}
 	}
+	$heightMap = $chunk->getHeightMap();
+	foreach ($heightMap as $h) {
+		if (!isset($stats["Height:Max"])) {
+			$stats["Height:Max"] = $h;
+		} elseif ($h > $stats["Height:Max"]) {
+			$stats["Height:Max"] = $h;
+		}
+		if (!isset($stats["Height:Min"])) {
+			$stats["Height:Min"] = $h;
+		} elseif ($height < $stats["Height:Min"]) {
+			$stats["Height:Min"] = $h;
+		}
+		if (!isset($stats["Height:Sum"])) {
+			$stats["Height:Sum"] = $h;
+		} else {
+			$stats["Height:Sum"] += $h;
+		}
+		incr($stats,"Height:Count");
+	}
+
+}
+echo "Number of chunks selected: ".$cnt."\n";
+if (isset($stats["Height:Count"]) && isset($stats["Height:Sum"])) {
+	$stats["Height:Avg"] = $stats["Height:Sum"]/$stats["Height:Count"];
+	unset($stats["Height:Count"]);
+	unset($stats["Height:Sum"]);
+}
+
+$sorted = array_keys($stats);
+natsort($sorted);
+foreach ($sorted as $k) {
+//	if (is_numeric($k)) {
+//		$v = Blocks::getBlockById($k);
+//		$v = $v !== null ? "$v ($k)" : "*Unsupported* ($k)";
+//	} else {
+		$v = $k;
+//	}
+	echo "  $v:\t".$stats[$k]."\n";
+}
+
+/*
 	foreach ($chunk->getEntities() as $entity) {
 		if (!isset($entity->id)) continue;
 		if ($entity->id->getValue() == "Item") {
@@ -133,75 +162,4 @@ function analyze_chunk(Chunk $chunk,&$stats) {
 	}
 }
 
-if (isset($argv[0]) && $argv[0] == '--all') {
-	// Process all regions
-	$argv = array_keys($regions);
-	echo "Analyzing ".count($regions)." regions\n";
-}
-
-foreach ($argv as $ppx) {
-	$ppx = explode(':',$ppx,2);
-	$pp = array_shift($ppx);
-
-	if (!isset($regions[$pp])) die("Region $pp does not exist\n");
-	echo " Reg: $pp ";
-	$chunks = 0;
-	list($rX,$rZ) = $regions[$pp];
-	$region = $fmt->getRegion($rX,$rZ);
-	$chunks = 0;
-	$stats = [];
-
-	if (count($ppx)) {
-		foreach (explode('+',$ppx[0]) as $cp) {
-			$cp = explode(',',$cp);
-			if (count($cp) != 2) die("Invalid chunk ids: ".$ppx[0].NL);
-			list($oX,$oZ) = $cp;
-			if (!is_numeric($oX) || !is_numeric($oZ)) die("Not numeric $oX,$oZ\n");
-			if ($oX < 0 || $oZ < 0 || $oX >= 32 || $oZ >= 32)
-				die("Invalid location $oX,$oZ\n");
-			if ($region->chunkExists($oX,$oZ)) {
-				++$chunks;
-				$chunk = $region->readChunk($oX,$oZ);
-				if ($chunk)
-					analyze_chunk($chunk,$stats);
-				else
-					echo "Unable to read chunk: $oX,$oZ\n";
-			}
-		}
-	} else {
-		for ($oX=0;$oX < 32;$oX++) {
-			//for ($oX=7;$oX < 8;$oX++) {
-			$cX = $rX*32+$oX;
-			for ($oZ=0;$oZ < 32; $oZ++) {
-				if (!($oZ % 16)) echo ".";
-				//for ($oZ=6;$oZ < 9; $oZ++) {
-				$cZ = $rZ*32+$oZ;
-				if ($region->chunkExists($oX,$oZ)) {
-					++$chunks;
-					$chunk = $region->readChunk($oX,$oZ);
-					if ($chunk) analyze_chunk($chunk,$stats);
-				}
-			}
-		}
-	}
-	echo "\n";
-	unset($region);
-	echo "  Chunks:\t$chunks\n";
-	if (isset($stats["Height:Count"]) && isset($stats["Height:Sum"])) {
-		$stats["Height:Avg"] = $stats["Height:Sum"]/$stats["Height:Count"];
-		unset($stats["Height:Count"]);
-		unset($stats["Height:Sum"]);
-	}
-	$sorted = array_keys($stats);
-	natsort($sorted);
-	foreach ($sorted as $k) {
-		if (is_numeric($k)) {
-			$v = Blocks::getBlockById($k);
-			$v = $v !== null ? "$v ($k)" : "*Unsupported* ($k)";
-		} else {
-			$v = $k;
-		}
-		echo "  $v:\t".$stats[$k].NL;
-	}
-}
 */

@@ -39,7 +39,7 @@ class McrChunk extends PcChunk {
 		} else {
 			die("LOADING OFFSETS NOT IMPLEMENTED!\n");
 		}
-		return $data;
+		return new McrChunk($data);
 	}
 	public function toBinary() {
 		$nbt = $this->initNBT();

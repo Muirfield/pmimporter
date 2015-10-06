@@ -2,192 +2,183 @@
 if (!defined('CLASSLIB_DIR'))
 	require_once(dirname(realpath(__FILE__)).'/../classlib/autoload.php');
 
+require_once(CLASSLIB_DIR."common.php");
 use pmimporter\LevelFormatManager;
-use pmimporter\anvil\Anvil;
-use pmimporter\mcregion\McRegion;
-use pmimporter\mcpe020\McPe020;
-use pmimporter\pm13\Pm13;
-use pmimporter\Copier;
 use pmimporter\Blocks;
-
-LevelFormatManager::addFormat(Anvil::class);
-LevelFormatManager::addFormat(McRegion::class);
-LevelFormatManager::addFormat(McPe020::class);
-LevelFormatManager::addFormat(Pm13::class);
+use pmimporter\Misc;
+use pmsrc\utils\Utils;
+use pmsrc\math\Vector3;
 
 define('CMD',array_shift($argv));
-$dstformat = "mcregion";
-$threads = 1;
-$offset = 0;
-$settings = [ "in" => null, "out" => null ];
-
-while (count($argv)) {
-	if ($argv[0] == "-f") {
-		array_shift($argv);
-		$dstformat = array_shift($argv);
-		if (!isset($dstformat)) die("No format specified\n");
-	} elseif ($argv[0] == "-c") {
-		array_shift($argv);
-		$rules = array_shift($argv);
-		if (!isset($rules)) die("No rules file specified\n");
-		loadRules($rules);
-	} elseif ($argv[0] == "-o") {
-		array_shift($argv);
-		$offset = array_shift($argv);
-		if (!isset($offset)) die("No offset specified\n");
-		if (!is_numeric($offset)) die("Must specify a number for offset\n");
-	} elseif ($argv[0] == "-t") {
-		array_shift($argv);
-		$threads = array_shift($argv);
-		if (!isset($threads)) die("No value specified for -t\n");
-		$threads = intval($threads);
-		if ($threads < 1) die("Invalid thread value $threads\n");
-	} elseif (preg_match('/^--(in|out)\.([A-Za-z0-9]+)=(.*)$/',$argv[0],$mv)) {
-		array_shift($argv);
-		list(,$mode,$key,$val) = $mv;
-		if (!$settings[$mode]) $settings[$mode] = [];
-		$settings[$mode][$key] = $val;
+$opts = [
+	"format" => "mcregion",
+	"threads" => Utils::getCoreCount(),
+	"yoff" => 0,
+	"adjchunk" => null,
+	"rules" => null,
+];
+$convert = true;
+$clobber = false;
+$minx = $minz = $maxx = $maxz = null;
+while (count($argv) > 0) {
+	if (substr($argv[0],0,2) != "--") break;
+	$opt = substr(array_shift($argv),2);
+	if (($val = preg_replace('/^min-x=/','',$opt)) != $opt) {
+		$minx = (int)$val;
+	} elseif (($val = preg_replace('/^max-x=/','',$opt)) != $opt) {
+		$maxx = (int)$val;
+	} elseif (($val = preg_replace('/^min-z=/','',$opt)) != $opt) {
+		$minz = (int)$val;
+	} elseif (($val = preg_replace('/^max-z=/','',$opt)) != $opt) {
+		$maxz = (int)$val;
+	} elseif (($val = preg_replace('/^x=/','',$opt)) != $opt) {
+		$minx = $maxx = (int)$val;
+	} elseif (($val = preg_replace('/^z=/','',$opt)) != $opt) {
+		$minz = $maxz = (int)$val;
+	} elseif ($opt == "convert") {
+		$convert = true;
+	} elseif ($opt == "no-convert") {
+		$convert = false;
+	} elseif ($opt == "clobber") {
+		$clobber = true;
+	} elseif ($opt == "no-clobber") {
+		$clobber = false;
 	} else {
-		break;
+		$opt = explode("=",$opt,2);
+		if (!isset($opts[$opt[0]])) die("Invalid option: ".$opt[0]."\n");
+		if (count($opt) == 1) die("Must specify a value for ".$opt[0]."\n");
+		$opts[$opt[0]] = $opt[1];
 	}
 }
-
-if (!extension_loaded("pcntl")) $threads = 1;
+$chgX = $chgZ = 0;
+if ($opts["adjchunk"] !== null) {
+  $n = explode(",",$opts["adjchunk"]);
+	if (count($n) != 2) die("adjchunk: Must specify X,Z chunk values\n");
+	$chgX = (int)$n[0];
+	$chgZ = (int)$n[1];
+}
+if (!extension_loaded("pcntl")) $opts["threads"] = 1;
 
 $srcpath=array_shift($argv);
 if (!isset($srcpath)) die("No src path specified\n");
 $srcpath = preg_replace('/\/*$/',"",$srcpath).'/';
 if (!is_dir($srcpath)) die("$srcpath: not found\n");
+$srcformat = LevelFormatManager::getFormat($srcpath);
+if (!$srcformat) die("$srcpath: Format not recognized\n");
+$src = new $srcformat($srcpath);
 
 $dstpath=array_shift($argv);
 if (!isset($dstpath)) die("No dst path specified\n");
 $dstpath = preg_replace('/\/*$/',"",$dstpath).'/';
-if (file_exists($dstpath)) die("$dstpath: already exist\n");
 
-$srcformat = LevelFormatManager::getFormat($srcpath);
-if (!$srcformat) die("$srcpath: Format not recognized\n");
+if (is_dir($dstpath)) {
+	$dstformat = LevelFormatManager::getFormat($dstpath);
+	if (!$dstformat) die("$dstpath: Format not recognized\n");
+	$settings = null;
+}  else {
+	$dstformat = LevelFormatManager::getFormatByName($opts["format"]);
+	$settings = [
+		"spawn" => $src->getSpawn(),
+		"seed" => $src->getSeed(),
+		"generator" => $src->getGenerator(),
+		"presets" => $src->getPresets(),
+	];
+}
+if (!$dstformat::writeable()) die("Format: ".$dstformat::getFormatName()." is not an output format\n");
+$dst = new $dstformat($dstpath,$settings);
 
-$dstformat = LevelFormatManager::getFormatByName($dstformat);
-if (!$dstformat) die("Output format not recognized\n");
-if ($dstformat !== McRegion::class) die("$dstformat: Format not supported\n");
-
-$srcfmt = new $srcformat($srcpath,true,$settings["in"]);
-$regions = $srcfmt->getRegions();
-if (!count($regions)) die("No regions found in $srcpath\n");
-
-$dstformat::generate($dstpath,basename($dstpath),
-							$srcfmt->getSpawn(),
-							$srcfmt->getSeed(),
-							$srcfmt->getGenerator(),
-							$srcfmt->getGeneratorOptions());
-
-$dstfmt = new $dstformat($dstpath,false,$settings["out"]);
-
-//////////////////////////////////////////////////////////////////////
-function loadRules($file) {
-	$fp = fopen($file,"r");
-	if ($fp === false) die("$file: Unable to open file\n");
-	$state = 'blocks';
-	while (($ln = fgets($fp)) !== false) {
-		$ln = preg_replace('/^\s+/','',$ln);
-		$ln = preg_replace('/\s+$/','',$ln);
-		if ($ln == '') continue;
-		if (preg_match('/^[;#]/',$ln)) continue;
-		if (strtolower($ln) == 'blocks') {
-			$state = 'blocks';
-		} elseif (strtolower($ln) == 'tiles') {
-			die("Unsupported ruleset: tiles\n");
-		} elseif (strtolower($ln) == 'entities') {
-			die("Unsupported ruleset: entities\n");
-		} else {
-			if ($state == 'blocks') {
-				$pp = preg_split('/(\s|=)+/',$ln);
-				if (count($pp) == 1) {
-					echo("Error parsing line: $ln[0]\n");
-					continue;
-				} else {
-					for ($i=0;$i<2;++$i) {
-						if (is_numeric($pp[$i])) continue;
-						$pp[$i] = Blocks::getBlockByName($pp[$i]);
-						if ($pp[$i] === null) {
-							echo("Unknown block type: $ln\n");
-							continue;
-						}
-					}
-					Blocks::addRule($pp[0],$pp[1]);
-				}
-			} else {
-				die("Invalid internal state: $state\n");
-			}
+if ($opts["rules"] !== null) {
+	if ($convert) {
+		// Add conversion rules
+		$tab = Misc::readTable($opts["rules"]);
+		if ($tab === false) die("Unable to read ".$opts["rules"]."\n");
+		foreach ($tab as $ln) {
+			Blocks::addRule((int)$ln[0],(int)$ln[1]);
 		}
-	}
-	fclose($fp);
-}
-
-function pmconvert_status($state,$data) {
-	switch ($state) {
-		case "CopyRegionStart":
-			echo "  Reg: $data\n";
-			break;
-		case "CopyChunk":
-			echo ".";
-			break;
-		case "CopyRegionDone":
-			echo "\n";
-			break;
-		default:
-			echo ".";
+	} else {
+		echo ("RULES ignored as no block conversion specified\n");
 	}
 }
 
+//echo __FILE__.",".__LINE__."\n";//##DEBUG
+if ($minx === null && $minz === null && $maxx === null && $maxz === null) {
+	$chunks = $src->getChunks();
+} else {
+	//echo __METHOD__.",".__LINE__."\n";//##DEBUG
+	$chunks = [];
+	foreach ($src->getChunks() as $xz => $n) {
+		list($cx,$cz) = $n;
+		if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+			 	($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
+		$chunks[$xz] = $n;
+	}
+}
+if (!$clobber) {
+	$dstchunks = $dst->getChunks();
+	foreach (array_values($chunks) as $xz) {
+		list($x,$z) = $xz;
+		$x += $chgX;
+		$z += $chgZ;
+		$id = implode(",",[$x,$z]);
+		if (isset($dstchunks[implode(",",[$x,$z])])) unset($chunks[implode(",",$xz)]);
+	}
+	unset($dstchunks);
+}
+echo "Number of Chunks to Copy: ".count($chunks)."\n";
 
-//////////////////////////////////////////////////////////////////////
-function copyNextRegion($offset) {
-	global $regions,$workers;
-	global $srcfmt,$dstfmt;
+if ($opts["threads"] > 1) {
+	echo("Disabling multiprocessing : slows down!\n");
+	$opts["threads"] = 1;
+}
+if ($opts["threads"] == 1) {
+	foreach ($chunks as $n) {
+		list($cx,$cz) = $n;
+		$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
+		$dst->importChunk($cx+$chgX,$cz+$chgZ,$chunk,$convert);
+	}
+	exit;
+}
 
-	if (!count($regions)) return;
-	$region = array_pop($regions);
+function copyNextChunk() {
+	global $chunks,$workers;
+	global $src,$dst;
+	global $opts,$chgX,$chgZ,$convert;
+
+	if (!count($chunks)) return;
+	list($cx,$cz) = array_pop($chunks);
 	$pid = pcntl_fork();
 
 	if ($pid == 0) {
-		echo "spawned: ".getmypid().NL;
-		Copier::copyRegion($region,$srcfmt,$dstfmt,
-								 __NAMESPACE__."\\pmconvert_status",
-								 $offset);
+		echo "spawned: ".getmypid()."\n";
+		$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
+		$dst->importChunk($cx+$chgX,$cz+$chgZ,$chunk,$convert);
 		exit(0);
 	} elseif ($pid == -1) {
 		die("Could not fork\n");
 	} else {
-		$workers[$pid] = $region;
+		$workers[$pid] = [$cx,$cz];
 	}
 }
-if ($threads == 1) {
-	foreach ($regions as $region) {
-		Copier::copyRegion($region,$srcfmt,$dstfmt,
-								 __NAMESPACE__."\\pmconvert_status",
-								 $offset);
-	}
-} else {
-	echo "Threads: $threads\n";
-	$workers = [];
-	for ($c = $threads;$c--;) {
-		copyNextRegion($offset);
-	}
-	while ($pid = pcntl_wait($rstatus)) {
-		if (!isset($workers[$pid])) continue;
-		list($rX,$rZ) = $workers[$pid];
-		unset($workers[$pid]);
-		if (pcntl_wexitstatus($rstatus)) {
-			echo "$pid ($rX,$rZ) failed\n";
-		} else {
-			echo "$pid ($rX,$rZ) succesful\n";
-		}
-		if (count($regions)) {
-			copyNextRegion($offset);
-		} else {
-			if (!count($workers)) break;
-		}
-	}
-	echo "ALL DONE\n";
+
+echo "Threads: ".$opts["threads"]."\n";
+
+$workers = [];
+for ($c = $opts["threads"];$c--;) {
+	copyNextChunk();
 }
+while ($pid = pcntl_wait($rstatus)) {
+	if (!isset($workers[$pid])) continue;
+	list($cX,$cZ) = $workers[$pid];
+	unset($workers[$pid]);
+	if (pcntl_wexitstatus($rstatus)) {
+		echo "$pid ($cX,$cZ) failed\n";
+	} else {
+		echo "$pid ($cX,$cZ) succesful\n";
+	}
+	if (count($chunks)) {
+		copyNextChunk();
+	} else {
+		if (!count($workers)) break;
+	}
+}
+echo "ALL DONE\n";

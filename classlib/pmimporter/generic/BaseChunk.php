@@ -1,6 +1,7 @@
 <?php
 namespace pmimporter\generic;
 use pmimporter\Chunk;
+use pmimporter\LevelFormat;
 use pmsrc\utils\Binary;
 
 use pmsrc\nbt\NBT;
@@ -13,6 +14,7 @@ use pmsrc\nbt\tag\IntArray;
 use pmsrc\nbt\tag\Long;
 
 abstract class BaseChunk implements Chunk {
+	protected $level;
 	protected $xPos;
 	protected $zPos;
 	protected $blocks;
@@ -26,6 +28,7 @@ abstract class BaseChunk implements Chunk {
 	protected $generated;
 	protected $populated;
 	protected $lighted;
+
 	/**
 	 * $data is an array with the following elements:
 	 *
@@ -44,7 +47,8 @@ abstract class BaseChunk implements Chunk {
 	 * - bool isLightPopulated
 	 * @param $data - input to initialize chunk
 	 */
-	public function __construct(array &$data) {
+	public function __construct(LevelFormat $fmt,array &$data) {
+		$this->level = $fmt;
 		$this->xPos = isset($data["x"]) ? $data["x"] : 0;
 		$this->zPos = isset($data["z"]) ? $data["z"] : 0;
 
@@ -60,6 +64,9 @@ abstract class BaseChunk implements Chunk {
 		$this->generated = isset($data["isGenerated"]) ? $data["isGenerated"] : true;
 		$this->populated = isset($data["isPopulated"]) ? $data["isPopulated"] : true;
 		$this->lighted = isset($data["isLightPopulated"]) ? $data["isLightPopulated"] : false;
+	}
+	public function getLevel() {
+		return $this->level;
 	}
 	public function getBlocks() {
 		return $this->blocks;

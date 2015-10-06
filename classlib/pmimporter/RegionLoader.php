@@ -5,7 +5,6 @@ use pmsrc\utils\Binary;
 
 
 class RegionLoader {
-	const VERSION = 1;
 	const COMPRESSION_GZIP = 1;
 	const COMPRESSION_ZLIB = 2;
 	const MAX_SECTOR_LENGTH = 256 << 12; //256 sectors, (1 MB)
@@ -169,7 +168,7 @@ class RegionLoader {
 		for ($x = 0; $x < 32; $x++) {
 			for ($z = 0; $z < 32; $z++) {
 				if (!$this->chunkExists($x,$z)) continue;
-				$chunks[] = [ $rX + $x, $rZ + $z ];
+				$chunks[implode(",",[$rX+$x,$rZ+$z])] = [ $rX + $x, $rZ + $z ];
 				++$c;
 			}
 		}

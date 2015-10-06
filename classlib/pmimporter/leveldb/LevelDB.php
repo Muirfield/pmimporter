@@ -118,7 +118,8 @@ class LevelDB implements LevelFormat {
 			if ($key{8} != self::ENTRY_VERSION) continue;
 			$chunkX = Binary::readLInt(substr($key,0,4));
 			$chunkZ = Binary::readLInt(substr($key,4,4));
-			$chunks[] = [ $chunkX, $chunkZ];
+			$chunks[implode(",",[$chunkX,$chunkZ])] = [ $chunkX, $chunkZ];
+
 		}
 		$db->close();
 		return $chunks;

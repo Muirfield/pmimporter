@@ -2,13 +2,8 @@
 if (!defined('CLASSLIB_DIR'))
 	require_once(dirname(realpath(__FILE__)).'/../classlib/autoload.php');
 
+require_once(CLASSLIB_DIR."common.php");
 use pmimporter\LevelFormatManager;
-use pmimporter\anvil\Anvil;
-use pmimporter\mcpe020\McPe020;
-use pmimporter\pm13\Pm13;
-use pmimporter\mcregion\McRegion;
-use pmimporter\leveldb\LevelDB;
-
 use pmsrc\utils\Binary;
 use pmsrc\nbt\NBT;
 use pmsrc\nbt\tag\Byte;
@@ -45,12 +40,6 @@ if (!isset($wpath)) die("No path specified\n");
 if (!file_exists($wpath)) die("$wpath: does not exist\n");
 
 if ($fixname) $opts["name"] = basename($wpath);
-
-LevelFormatManager::addFormat(Anvil::class);
-LevelFormatManager::addFormat(McRegion::class);
-LevelFormatManager::addFormat(McPe020::class);
-//LevelFormatManager::addFormat(Pm13::class);
-//if (extension_loaded("leveldb")) LevelFormatManager::addFormat(LevelDB::class);
 
 $fmt = LevelFormatManager::getFormat($wpath);
 if ($fmt === null) die("$wpath: unrecognized format\n");
@@ -132,7 +121,7 @@ if ((Binary::readLInt(substr($dat,0,4)) == 2
 }
 if (isset($lvdat->LevelName)) echo "LevelName:  ".$lvdat->LevelName->getValue()."\n";
 if (isset($lvdat->SpawnX) && isset($lvdat->SpawnY) && isset($lvdat->SpawnZ))
-	echo "Spawn:      ".implode(", ",[
+	echo "Spawn:      ".implode(",",[
 		$lvdat->SpawnX->getValue(),
 		$lvdat->SpawnY->getValue(),
 		$lvdat->SpawnZ->getValue(),

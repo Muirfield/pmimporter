@@ -2,6 +2,7 @@
 namespace pmimporter\anvil;
 
 use pmimporter\generic\PcFormat;
+use pmimporter\Chunk;
 
 class Anvil extends PcFormat {
 	public static function getFormatName() {
@@ -29,4 +30,9 @@ class Anvil extends PcFormat {
 	protected function getFileExtension() {
 		return "mca";
 	}
+	public function importChunk($x,$z,Chunk $chunk,$convert) {
+		$newchunk =  AnvilChunk::importChunk($this,$x,$z,$chunk,$convert);
+		$this->writeChunk($x,$z,$newchunk->toBinary());
+	}
+
 }

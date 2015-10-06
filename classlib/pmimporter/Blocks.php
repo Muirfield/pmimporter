@@ -18,10 +18,10 @@ abstract class Blocks {
 		} else {
 			$tab = Misc::readTable(dirname(realpath(__FILE__))."/blocks.txt");
 		}
-		if ($tab === null) die("Unable to read blocks.txt\n");
+		if ($tab === false) die("Unable to read blocks.txt\n");
 
 		for($i=0;$i<256;++$i) {
-			self::$trTab[chr($i)] = chr(INVALID_BLOCK);
+			self::$trTab[chr($i)] = chr(self::INVALID_BLOCK);
 		}
 
 		foreach ($tab as $ln)	 {
@@ -34,8 +34,9 @@ abstract class Blocks {
 			if ($code >= 0) {
 				if (isset(self::$trTab[$chr])) unset(self::$trTab[$chr]);
 			} else {
-				if (count($ln)) self::$trTab[$chr] = chr((int)$ln[0]);
+				self::$blockNames[$acode] .= " *";
 			}
+			if (count($ln)) self::$trTab[$chr] = chr((int)$ln[0]);
 		}
 	}
 	public static function getBlockById($id) {

@@ -2,6 +2,7 @@
 namespace pmimporter\anvil;
 use pmimporter\generic\PcChunk;
 use pmimporter\RegionLoader;
+use pmimporter\LevelFormat;
 
 use pmsrc\nbt\NBT;
 use pmsrc\nbt\tag\Byte;
@@ -13,7 +14,7 @@ use pmsrc\nbt\tag\IntArray;
 use pmsrc\nbt\tag\Long;
 
 class AnvilChunk extends PcChunk {
-	static public function fromBinary($binary, $yoff = 0) {
+	static public function fromBinary(LevelFormat $level, &$binary, $yoff = 0) {
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();
@@ -50,14 +51,14 @@ class AnvilChunk extends PcChunk {
 		} else {
 			die("LOADING OFFSETS NOT IMPLEMENTED!\n");
 		}
-		return new AnvilChunk($data);
+		return new AnvilChunk($level,$data);
 	}
-	public function __construct(array &$data) {
+	public function __construct(LevelFormat $level,array &$data) {
 		if (isset($data["blocks"]) && !is_array($data["blocks"])) {
 			// Convert from ZXY to YZX...
 			die("THIS IS STILL TO BE IMPLEMENTED\n");
 		}
-		parent::__construct($data);
+		parent::__construct($level, $data);
 	}
 
 	public function toBinary() {

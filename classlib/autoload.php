@@ -29,3 +29,5 @@ if(php_sapi_name() !== "cli") die("Must run on CLI API php version\n");
 //\pmimporter\Blocks::__init();
 //require_once(CLASSLIB_DIR."pmimporter/Entities.php");
 //\pmimporter\Entities::__init();
+define('PM_MAX_HEIGHT',128);
+define('PM_HEIGHT_BITS',7);

@@ -56,6 +56,7 @@ $p['scripts/version.php'] = $version."\n";
 $p['scripts/man.php'] = file_get_contents('README.md');
 
 $dirs=['classlib'];
+$reqs = "<?php\n";
 while(count($dirs)) {
 	$d = array_shift($dirs);
 	$dh = opendir($d) or die("$d: unable to open directory\n");
@@ -68,15 +69,20 @@ while(count($dirs)) {
 		}
 		if (!is_file($fpath)) continue;
 		if (preg_match('/\.php$/',$f) || preg_match('/\.txt$/',$f)) {
-			echo("- $fpath\n");
+			echo("- $fpath ($d)\n");
 			$p[$fpath] = file_get_contents($fpath);
+			if (preg_match('/\.php$/',$f) && $d != "classlib") {
+				$reqs .= "require_once('$fpath');\n";
+			}
 		}
 	}
 	closedir($dh);
 }
 
+//$p["classlib/preload.php"] = $reqs;
 // COMMENTED THIS OUT AS COMPRESSING WAS GENERATING CORRUPTED ARCHIVES!
-$p->compressFiles(Phar::GZ);
+// Won't work if we fork...
+//$p->compressFiles(Phar::GZ);
 
 //Stop buffering write requests to the Phar archive, and save changes to disk
 $p->stopBuffering();

@@ -2,13 +2,9 @@
 if (!defined('CLASSLIB_DIR'))
 	require_once(dirname(realpath(__FILE__)).'/../classlib/autoload.php');
 
+require_once(CLASSLIB_DIR."common.php");
 use pmimporter\LevelFormatManager;
 use pmimporter\Blocks;
-use pmimporter\anvil\Anvil;
-use pmimporter\mcpe020\McPe020;
-use pmimporter\pm13\Pm13;
-use pmimporter\mcregion\McRegion;
-use pmimporter\leveldb\LevelDB;
 
 define('CMD',array_shift($argv));
 // Handle options
@@ -42,13 +38,6 @@ while (count($argv) > 0) {
 $wpath=array_shift($argv);
 if (!isset($wpath)) die("No path specified\n");
 if (!file_exists($wpath)) die("$wpath: does not exist\n");
-
-
-//LevelFormatManager::addFormat(Anvil::class);
-LevelFormatManager::addFormat(McRegion::class);
-//LevelFormatManager::addFormat(McPe020::class);
-//LevelFormatManager::addFormat(Pm13::class);
-//if (extension_loaded("leveldb")) LevelFormatManager::addFormat(LevelDB::class);
 
 $fmt = LevelFormatManager::getFormat($wpath);
 if ($fmt === null) die("$wpath: unrecognized format\n");
@@ -109,7 +98,7 @@ foreach ($chunks as $chunk) {
 		}
 		if (!isset($stats["Height:Min"])) {
 			$stats["Height:Min"] = $h;
-		} elseif ($height < $stats["Height:Min"]) {
+		} elseif ($h < $stats["Height:Min"]) {
 			$stats["Height:Min"] = $h;
 		}
 		if (!isset($stats["Height:Sum"])) {

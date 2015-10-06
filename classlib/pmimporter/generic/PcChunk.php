@@ -13,6 +13,8 @@ use pmsrc\nbt\tag\IntArray;
 use pmsrc\nbt\tag\Long;
 
 abstract class PcChunk extends BaseChunk {
+	const VERSION = 1;
+
 	protected static function fromNBT(Compound $nbt) {
 		$data = [];
 		$data["x"] = $nbt->xPos->getValue();

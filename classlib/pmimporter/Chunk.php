@@ -1,15 +1,17 @@
 <?php
 namespace pmimporter;
+use pmimporter\LevelFormat;
 
 interface Chunk {
 	/**
    *
 	 * @param $data - input to initialize chunk
 	 */
-	public function __construct(array &$data);
-
-	static public function fromBinary($data, $yoff = 0);
+	public function __construct(LevelFormat $fmt,array &$data);
+	static public function fromBinary(LevelFormat $fmt, &$data, $yoff = 0);
+	static public function importChunk(LevelFormat $level,$x,$y,Chunk $chunk,$convert);
 	public function toBinary();
+	public function getLevel();
 	public function getBlocks();
 	public function getRawBlocks();
 	public function getMeta();

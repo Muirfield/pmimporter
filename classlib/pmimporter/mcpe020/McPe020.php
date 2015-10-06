@@ -79,7 +79,7 @@ class McPe020 implements LevelFormat {
 		$chunks = [];
 		for ($x =0 ; $x < 16; $x++) {
 			for ($z =0 ; $z < 16; $z++) {
-				$chunks[] = [ $x, $z];
+				$chunks[implode(",",[$$x,$z])] = [ $x, $z];
 			}
 		}
 		return $chunks;

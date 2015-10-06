@@ -1,41 +1,47 @@
 <img src="https://raw.githubusercontent.com/alejandroliu/pmimporter/master/ImportMap-icon.png" style="width:64px;height:64px" width="64" height="64"/>
 
-pmimporter
-==========
+# pmimporter
 
 * Summary: Import world maps into PocketMine-MP
 * WebSite: [github](https://github.com/alejandroliu/pmimporter)
 
-Overview
---------
-
-
-**TODO:**
+## Overview
 
 * nbtdump - Dump the contents of NBT files
 * level - manipulate some level.dat settings
-* convert - main conversion tool
 * check - read world maps and analyze the block, object composition
+
+**TODO:**
+
+* convert - main conversion tool
 * entities - dump entity information
 * dumpchunk - Extract an specific chunk from a map so it can be
   processed by nbtdump.
 
-Description
------------
+## Description
 
 A collection of tools used for importing world maps for use with
 PocketMine-MP and Minecraft PE.
 
 It supports the following input formats:
 
-**TODO:**
-
 - McRegion (Minecraft PC Edition, PocketMine v1.4)
+
+**TODO:**
 - Anvil (Minecraft PC Edition)
 - PMF (PocketMine v1.3)
 - mcpe020 (Minecraft PE 0.2.0-0.8.1)
 
 Currently, it only support McRegion format for output.
+
+
+## Issues
+
+- yoff with an odd number causes performance drops.
+
+
+* * *
+
 
 When importing Minecraft PC Edition world maps (Anvil and McRegion formats) it
 will analyze the used blocks to make sure that only blocks supported

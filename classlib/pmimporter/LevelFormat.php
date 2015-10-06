@@ -1,6 +1,7 @@
 <?php
 namespace pmimporter;
 //use pmsrc\math\Vector3;
+use pmimporter\Chunk;
 
 interface LevelFormat {
 	const ORDER_YZX = 0;
@@ -89,5 +90,11 @@ interface LevelFormat {
 	 * @return Chunk
 	 */
 	public function getChunk($cX,$cZ,$yoff=0);
-
+	/**
+	 * @param int $x
+	 * @param int $z
+	 * @param Chunk $chunk
+	 * @param bool $conver5
+	 */
+	public function importChunk($x,$z,Chunk $chunk,$convert);
 }

@@ -3,8 +3,7 @@ namespace pmimporter\mcregion;
 
 use pmimporter\generic\PcFormat;
 use pmimporter\mcregion\McrChunk;
-//use pmimporter\generic\BaseFormat;
-
+use pmimporter\Chunk;
 
 class McRegion extends PcFormat {
 	protected $path;
@@ -24,16 +23,22 @@ class McRegion extends PcFormat {
 		return self::ORDER_ZXY;
 	}
 	public static function writeable() {
-		return false;
+		return true;
 	}
 	public function __construct($path, $settings = null) {
+		//echo __METHOD__.",".__LINE__." - $path\n";//##DEBUG
 		$this->initFormat(self::class, $path, $settings);
 	}
 	public function getChunk($cx,$cz,$yoff=0) {
 		$data = $this->readChunk($cx,$cz);
-    return McrChunk::fromBinary($data,$yoff);
+    return McrChunk::fromBinary($this,$data,$yoff);
 	}
 	protected function getFileExtension() {
 		return "mcr";
 	}
+	public function importChunk($x,$z,Chunk $chunk,$convert) {
+		$newchunk =  McrChunk::importChunk($this,$x,$z,$chunk,$convert);
+		$this->writeChunk($x,$z,$newchunk->toBinary());
+	}
+
 }

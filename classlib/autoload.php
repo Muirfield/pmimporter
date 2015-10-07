@@ -1,9 +1,8 @@
 <?php
-if (!defined('CLASSLIB_DIR')) {
-	define('CLASSLIB_DIR',dirname(realpath(__FILE__)).'/');
-	// Report all PHP errors
-	error_reporting(E_ALL);
-}
+// Report all PHP errors
+error_reporting(E_ALL);
+
+if (!defined('CLASSLIB_DIR')) define('CLASSLIB_DIR',dirname(realpath(__FILE__)).'/');
 
 function __autoload($classname) {
 	//echo "autoload $classname\n";

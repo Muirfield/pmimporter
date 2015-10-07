@@ -17,7 +17,7 @@ class Anvil extends PcFormat {
 		return self::ORDER_YZX;
 	}
 	public static function writeable() {
-		return false;
+		return true;
 	}
 	public function __construct($path, $settings = null) {
 		$this->initFormat(self::class, $path, $settings);
@@ -30,9 +30,8 @@ class Anvil extends PcFormat {
 	protected function getFileExtension() {
 		return "mca";
 	}
-	public function importChunk($x,$z,Chunk $chunk,$convert) {
-		$newchunk =  AnvilChunk::importChunk($this,$x,$z,$chunk,$convert);
-		$this->writeChunk($x,$z,$newchunk->toBinary());
+	public function newChunk(array &$data) {
+		return new AnvilChunk($this,$data);
 	}
 
 }

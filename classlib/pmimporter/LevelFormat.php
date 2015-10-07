@@ -91,10 +91,8 @@ interface LevelFormat {
 	 */
 	public function getChunk($cX,$cZ,$yoff=0);
 	/**
-	 * @param int $x
-	 * @param int $z
-	 * @param Chunk $chunk
-	 * @param bool $conver5
+	 * @param $data - input to initialize chunk
+	 * @return Chunk
 	 */
-	public function importChunk($x,$z,Chunk $chunk,$convert);
+	public function newChunk(array &$data);
 }

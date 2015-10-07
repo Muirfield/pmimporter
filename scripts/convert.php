@@ -125,7 +125,9 @@ if (!$clobber) {
 	}
 	unset($dstchunks);
 }
+if (count($chunks) == 0) die("No chunks selected for copy\n");
 echo "Number of Chunks to Copy: ".count($chunks)."\n";
+
 
 //if ($opts["threads"] > 1) {
 //	echo("Disabling multiprocessing : slows down!\n");
@@ -137,7 +139,7 @@ if ($opts["threads"] == 1) {
 		list($cx,$cz) = $n;
 		$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
 		echo ".";
-		$dst->importChunk($cx+$chgX,$cz+$chgZ,$chunk,$convert);
+		LevelFormatManager::importChunk($dst,$cx+$chgX,$cz+$chgZ,$chunk,$convert);
 	}
 	echo "\n";
 	exit;
@@ -156,7 +158,7 @@ function copyNextChunk() {
 		//echo "spawned: ".getmypid()."\n";
 		echo ".";
 		$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
-		$dst->importChunk($cx+$chgX,$cz+$chgZ,$chunk,$convert);
+		LevelFormatManager::importChunk($dst,$cx+$chgX,$cz+$chgZ,$chunk,$convert);
 		exit(0);
 	} elseif ($pid == -1) {
 		die("Could not fork\n");

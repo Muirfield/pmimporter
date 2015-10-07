@@ -2,6 +2,7 @@
 namespace pmimporter\anvil;
 use pmimporter\generic\PcChunk;
 use pmimporter\RegionLoader;
+use pmimporter\Chunk;
 use pmimporter\LevelFormat;
 
 use pmsrc\nbt\NBT;
@@ -59,6 +60,30 @@ class AnvilChunk extends PcChunk {
 			die("THIS IS STILL TO BE IMPLEMENTED\n");
 		}
 		parent::__construct($level, $data);
+	}
+	static public function importChunk(LevelFormat $level,$x,$y,Chunk $chunk,$convert) {
+		die("TODO --- implement this!\n");
+		$data["x"] = $x; $adjX = $x - $chunk->getX();
+		$data["y"] = $y; $adjZ = $z - $chunk->getZ();
+		$data["biomeColors"] = $chunk->getBiomeColors();
+		$data["heightMap"] = $chunk->getHeightMap();
+		$data["isGenerated"] = $chunk->isGenerated();
+		$data["isPopulated"] = $chunk->isPopulated();
+		$data["isLightPopulated"] = $chunk->isLightPopulated();
+
+		if ($convert) {
+			$data["blocks"] = strtr($chunk->getBlocks(),Blocks::$trTab);
+		} else {
+			$data["blocks"] = $chunk->getBlocks();
+		}
+		//$data["entities"] = ;
+		//$data["tiles"] = ;
+
+		$data["meta"] = $chunk->getMeta();
+		$data["blocklight"] = $chunk->getBlockLight();
+		$data["skyLight"] = $chunk->getSkyLight();
+
+		return new AnvilChunk($level,$data);
 	}
 
 	public function toBinary() {

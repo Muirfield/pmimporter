@@ -66,13 +66,15 @@ class McrChunk extends PcChunk {
 		$len = (1<<$bits) - $off;
 		$xbits = $bits+4;
 		$zbits = $bits;
+		//echo "off=$off bits=$bits len=$len xbits=$xbits zbits=$zbits\n";//##DEBUG
 		for ($ox=0; $ox < 16; $ox++) {
 			for ($oz=0; $oz < 16; $oz++) {
 				$output .= $pad;
 				$index = ($ox<<10)|($oz<<6);
-				$output .=  $output .=  chr(((ord($input{$index++}) & 0xf) << 4) | (ord($pad0) & 0xf));;
+				$output .= chr(((ord($input{$index++}) & 0xf) << 4) | (ord($pad0) & 0xf));;
 				for ($oy = 1; $oy < $len ; $oy++) {
 					$output .= chr((ord($input{$index++}) >> 4) | ((ord($input{$index}) & 0xf)<<4));
+					//echo "ox=$ox oz=$oz oy=$oy len=$len ".strlen($output)."\n";
 				}
 			}
 		}

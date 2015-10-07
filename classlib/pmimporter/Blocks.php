@@ -47,10 +47,18 @@ abstract class Blocks {
 		if (isset(self::$blockIds[$name])) return self::$blockIds[$name];
 		return null;
 	}
+	private static function getCode($id) {
+		if ($id == null) return $id;
+		if (is_numeric($id)) {
+			if ($id < 0 || $id > 255) return null;
+		 	return $id;
+		}
+		return self::getBlockByName($id);
+	}
 	public static function addRule($cid,$nid) {
-		if ($cid === null || $nid === null) return;
+		if (($cid = self::getCode($cid)) === null) return;
+		if (($nid = self::getCode($nid)) === null) return;
 		if ($cid == $nid) return;
-		if ($nid < 0) return;
 		self::$trTab[chr($cid)] = chr($nid);
 	}
 }

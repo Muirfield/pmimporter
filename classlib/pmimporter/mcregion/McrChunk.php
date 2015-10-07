@@ -104,6 +104,8 @@ class McrChunk extends PcChunk {
 		return new McrChunk($level,$data);
 	}
 	static public function fromBinary(LevelFormat $level,&$binary, $yoff = 0) {
+		//echo "CHUNK: ".strlen($binary)." bytes\n";//##DEBUG
+
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();

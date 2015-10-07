@@ -16,13 +16,15 @@ use pmsrc\nbt\tag\Long;
 
 class AnvilChunk extends PcChunk {
 	static public function fromBinary(LevelFormat $level, &$binary, $yoff = 0) {
+		echo "CHUNK: ".strlen($binary)." bytes\n";//##DEBUG
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();
 		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)) return null;
-
+		//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 		$nbt = $chunk->Level;
 		$data = self::fromNBT($nbt);
+		//echo implode(", ",array_keys($data))."\n";//##DEBUG
 
 		if(isset($nbt->Entities) && $nbt->Entities instanceof Enum){
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
@@ -39,7 +41,9 @@ class AnvilChunk extends PcChunk {
 		$data["skyLight"] = [];
 
 		if ($yoff == 0) {
+			//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 			if (isset($nbt->Sections) && ($nbt->Sections instanceof Enum)) {
+				//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 				foreach ($nbt->Sections as $section) {
 					if (!($section instanceof Compound)) continue;
 					$y = (int)$section["Y"];

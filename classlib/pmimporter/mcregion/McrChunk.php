@@ -60,9 +60,9 @@ class McrChunk extends PcChunk {
 		}
 		return $output;
 	}
-	static protected function nibbledShiftUp($input,$pad,$off,$bits) {
+	static protected function nibbledShiftUp($input,$pad0,$off,$bits) {
 		$output = "";
-		$pad = str_repeat($pad,$off);
+		$pad = str_repeat($pad0,$off);
 		$len = (1<<$bits) - $off;
 		$xbits = $bits+4;
 		$zbits = $bits;
@@ -79,29 +79,6 @@ class McrChunk extends PcChunk {
 			}
 		}
 		return $output;
-	}
-	static public function importChunk(LevelFormat $level,$x,$y,Chunk $chunk,$convert) {
-		$data["x"] = $x; $adjX = $x - $chunk->getX();
-		$data["y"] = $y; $adjZ = $z - $chunk->getZ();
-		$data["biomeColors"] = $chunk->getBiomeColors();
-		$data["heightMap"] = $chunk->getHeightMap();
-		$data["isGenerated"] = $chunk->isGenerated();
-		$data["isPopulated"] = $chunk->isPopulated();
-		$data["isLightPopulated"] = $chunk->isLightPopulated();
-
-		if ($convert) {
-			$data["blocks"] = strtr($chunk->getBlocks(),Blocks::$trTab);
-		} else {
-			$data["blocks"] = $chunk->getBlocks();
-		}
-		//$data["entities"] = ;
-		//$data["tiles"] = ;
-
-		$data["meta"] = $chunk->getMeta();
-		$data["blocklight"] = $chunk->getBlockLight();
-		$data["skyLight"] = $chunk->getSkyLight();
-
-		return new McrChunk($level,$data);
 	}
 	static public function fromBinary(LevelFormat $level,&$binary, $yoff = 0) {
 		//echo "CHUNK: ".strlen($binary)." bytes\n";//##DEBUG

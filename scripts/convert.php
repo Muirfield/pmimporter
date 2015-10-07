@@ -14,8 +14,8 @@ $opts = [
 	"format" => "mcregion",
 	"threads" => Utils::getCoreCount(),
 	"yoff" => 0,
-	"adjchunk" => null,
-	"rules" => null,
+	"adjchunk" => false,
+	"rules" => false,
 ];
 $convert = true;
 $clobber = false;
@@ -51,7 +51,7 @@ while (count($argv) > 0) {
 	}
 }
 $chgX = $chgZ = 0;
-if ($opts["adjchunk"] !== null) {
+if ($opts["adjchunk"] !== false) {
   $n = explode(",",$opts["adjchunk"]);
 	if (count($n) != 2) die("adjchunk: Must specify X,Z chunk values\n");
 	$chgX = (int)$n[0];
@@ -77,6 +77,7 @@ if (is_dir($dstpath)) {
 	$settings = null;
 }  else {
 	$dstformat = LevelFormatManager::getFormatByName($opts["format"]);
+	if ($dstformat === null) die("Unknown format: ".$opts["format"]."\n");
 	$settings = [
 		"spawn" => $src->getSpawn(),
 		"seed" => $src->getSeed(),
@@ -87,7 +88,7 @@ if (is_dir($dstpath)) {
 if (!$dstformat::writeable()) die("Format: ".$dstformat::getFormatName()." is not an output format\n");
 $dst = new $dstformat($dstpath,$settings);
 
-if ($opts["rules"] !== null) {
+if ($opts["rules"] !== false) {
 	if ($convert) {
 		// Add conversion rules
 		$tab = Misc::readTable($opts["rules"]);
@@ -126,16 +127,19 @@ if (!$clobber) {
 }
 echo "Number of Chunks to Copy: ".count($chunks)."\n";
 
-if ($opts["threads"] > 1) {
-	echo("Disabling multiprocessing : slows down!\n");
-	$opts["threads"] = 1;
-}
+//if ($opts["threads"] > 1) {
+//	echo("Disabling multiprocessing : slows down!\n");
+//	$opts["threads"] = 1;
+//}
+
 if ($opts["threads"] == 1) {
 	foreach ($chunks as $n) {
 		list($cx,$cz) = $n;
 		$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
+		echo ".";
 		$dst->importChunk($cx+$chgX,$cz+$chgZ,$chunk,$convert);
 	}
+	echo "\n";
 	exit;
 }
 
@@ -149,7 +153,8 @@ function copyNextChunk() {
 	$pid = pcntl_fork();
 
 	if ($pid == 0) {
-		echo "spawned: ".getmypid()."\n";
+		//echo "spawned: ".getmypid()."\n";
+		echo ".";
 		$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
 		$dst->importChunk($cx+$chgX,$cz+$chgZ,$chunk,$convert);
 		exit(0);
@@ -172,8 +177,8 @@ while ($pid = pcntl_wait($rstatus)) {
 	unset($workers[$pid]);
 	if (pcntl_wexitstatus($rstatus)) {
 		echo "$pid ($cX,$cZ) failed\n";
-	} else {
-		echo "$pid ($cX,$cZ) succesful\n";
+	//} else {
+		//echo "$pid ($cX,$cZ) succesful\n";
 	}
 	if (count($chunks)) {
 		copyNextChunk();

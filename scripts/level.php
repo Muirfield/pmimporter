@@ -16,11 +16,11 @@ use pmsrc\math\Vector3;
 define('CMD',array_shift($argv));
 
 $opts = [
-	"name" => null,
-	"spawn" => null,
-	"seed" => null,
-	"generator" => null,
-	"preset" => null,
+	"name" => false,
+	"spawn" => false,
+	"seed" => false,
+	"generator" => false,
+	"preset" => false,
 ];
 $fixname = false;
 while (count($argv)) {
@@ -50,7 +50,7 @@ if ($dat === false) die("$wpath: unable to open level.dat\n");
 function modifyNbt(Compound $nbt, array $opts) {
 	$changed = false;
 	foreach ($opts as $k=>$v) {
-		if ($v === null) continue;
+		if ($v === false) continue;
 		switch ($k) {
 			case "name":
 				if (isset($nbt->LevelName) && $nbt->LevelName->getValue() == $v) continue;
@@ -74,7 +74,7 @@ function modifyNbt(Compound $nbt, array $opts) {
 				break;
 			case "spawn":
 				$xyz = explode(",",$v);
-				if ($xyz != 3) die("Invalid spawn value: $v\n");
+				if (count($xyz) != 3) die("Invalid spawn value: $v\n");
 				list($x,$y,$z) = $xyz;
 				if (isset($nbt->SpawnX) && $nbt->SpawnX->getValue() == $x &&
 						isset($nbt->SpawnY) && $nbt->SpawnY->getValue() == $y &&
@@ -105,7 +105,7 @@ if ((Binary::readLInt(substr($dat,0,4)) == 2
 		echo "Updating $fpath\n";
 		$nbt->setData($lvdat);
 		$bin = $nbt->write();
-		//file_put_contents($fpath,substr($dat,0,4).Binary::writeLInt(strlen($bin)).$bin);
+		file_put_contents($fpath,substr($dat,0,4).Binary::writeLInt(strlen($bin)).$bin);
 	}
 } else {
 	// MCPC Anvil/McRegion
@@ -116,7 +116,7 @@ if ((Binary::readLInt(substr($dat,0,4)) == 2
 	if ($changed) {
 		echo "Updating $fpath\n";
 		$nbt->setData(new Compound(null,["Data"=>$lvdat]));
-		//file_put_contents($fpath,$nbt->writeCompressed());
+		file_put_contents($fpath,$nbt->writeCompressed());
 	}
 }
 if (isset($lvdat->LevelName)) echo "LevelName:  ".$lvdat->LevelName->getValue()."\n";

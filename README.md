@@ -19,14 +19,23 @@ PocketMine-MP and Minecraft PE.
 
 It supports the following formats:
 
-- McRegion (Minecraft PC Edition pre1.2)
-- Anvil (Minecraft PC Edition v1.2 and better)
+- McRegion: Minecraft PC Edition pre1.2
+- Anvil: Minecraft PC Edition v1.2 and better
+- PMF: PocketMine v1.3.  **READ-ONLY** format.
+- mcpe0.2.0: Minecraft PE finite worlds.   **READ-ONLY** format.
 
 **TODO:**
-- PMF (PocketMine v1.3)
-- mcpe020 (Minecraft PE 0.2.0-0.8.1)
-- LevelDB (Minecraft PE 0.9.0)
+- LevelDB: Minecraft PE v0.9.0 (or better) infinite worlds.
 
+
+
+
+
+
+
+
+
+* * *
 
 When importing Minecraft PC Edition world maps (Anvil and McRegion formats) it
 will analyze the used blocks to make sure that only blocks supported

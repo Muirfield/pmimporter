@@ -10,37 +10,22 @@
 * nbtdump - Dump the contents of NBT files
 * level - manipulate some level.dat settings
 * check - read world maps and analyze the block, object composition
-
-**TODO:**
-
 * convert - main conversion tool
-* entities - dump entity information
-* dumpchunk - Extract an specific chunk from a map so it can be
-  processed by nbtdump.
 
 ## Description
 
 A collection of tools used for importing world maps for use with
 PocketMine-MP and Minecraft PE.
 
-It supports the following input formats:
+It supports the following formats:
 
-- McRegion (Minecraft PC Edition, PocketMine v1.4)
+- McRegion (Minecraft PC Edition pre1.2)
+- Anvil (Minecraft PC Edition v1.2 and better)
 
 **TODO:**
-- Anvil (Minecraft PC Edition)
 - PMF (PocketMine v1.3)
 - mcpe020 (Minecraft PE 0.2.0-0.8.1)
-
-Currently, it only support McRegion format for output.
-
-
-## Issues
-
-- yoff with an odd number causes performance drops.
-
-
-* * *
+- LevelDB (Minecraft PE 0.9.0)
 
 
 When importing Minecraft PC Edition world maps (Anvil and McRegion formats) it
@@ -49,14 +34,14 @@ by Minecraft PE are generated.  It does this by either mapping these
 blocks or removing them.  This conversion/fitering can be tweaked with
 an user provided `rules` file.
 
+**TODO**
 Similarly, Tiles and Entities that are not supported by Minecraft PE
 are eliminated.
 
 This is done because using these unsupported features on a Minecraft
 PE client would cause the game to crash.
 
-Command Usage
--------------
+## Command Usage
 
 In general, the command usage is:
 
@@ -128,55 +113,8 @@ The following attributes are supported:
 
 Dumps the contents of an `NBT` formatted file.
 
-#### DUMPCHUNK
 
-	dumpchunk worldpath rX,rY:cX,cY
-
-Arguments are simmilar to `pmcheck`.
-
-* `worldpath` : Directory path to world to analyze.
-* `rX,rZ` : Region X,Z coordinates.
-* `:cX,cZ` : Specify individual chunks (in Chunk offsets, from 0 to
-  31) to dump.
-
-Settings
---------
-
-Settings are configuration strings that can be used to tweak either
-the reading or the writing of maps.  These are format specifc.
-
-## PMF1.3 Settings
-
-- `Xoff` : offsets chunks in the X direction.  Values can be from -15
-  to 15, however, unless the values are from 0 (value) to 8, parts of
-  the maps will be missing (as they will fall outside the region).
-- `Zoff` : offsets chunks in the Z direction.  Values can be from -15
-  to 15, however, unless the values are from 0 (value) to 8, parts of
-  the maps will be missing (as they will fall outside the region).
-- `name` : Changes the reported name of the map.
-- `seed` : Changes the reported seed of the map.
-- `spawn` : Accepts 3 numbers separated by commas.  For example:
-  `128,64,128`.  Changes the reported spawn location.
-- `generator` : Changes the reported map generator value.
-- `preset` : Changes the reported generator presets value.
-
-## McPe0.2.0 Settings
-
-- `Xoff` : offsets chunks in the X direction.  Values can be from -15
-  to 15, however, unless the values are from 0 (value) to 8, parts of
-  the maps will be missing (as they will fall outside the region).
-- `Zoff` : offsets chunks in the Z direction.  Values can be from -15
-  to 15, however, unless the values are from 0 (value) to 8, parts of
-  the maps will be missing (as they will fall outside the region).
-- `name` : Changes the reported name of the map.
-- `seed` : Changes the reported seed of the map.
-- `spawn` : Accepts 3 numbers separated by commas.  For example:
-  `128,64,128`.  Changes the reported spawn location.
-- `generator` : Changes the reported map generator value.
-- `preset` : Changes the reported generator presets value.
-
-Installation
-------------
+## Installation
 
 Requirements:
 
@@ -189,8 +127,8 @@ Download `pmimporter.phar` and use.  It does *not* need to be
 installed.
 
 
-Configure translation
----------------------
+## Configure translation
+
 
 You can configure the translation by providing a `rules` file and
 passing it to `pmcovert` with the `-c` option. The format of `rules.txt`
@@ -205,8 +143,8 @@ There is a default set of conversion rules, but you can tweak it by
 using `rules`.
 
 
-FAQ
----
+## FAQ
+
 
 * Q: Why it takes so long?
 * A: Because my programming skills suck.  I usally start a conversion
@@ -243,16 +181,15 @@ FAQ
 * A: Detailed maps need to be uncompressed by the server.  These take
   an additional load on the server.
 
-References
-----------
+## References
 
 * [PocketMine-MP](http://www.pocketmine.net/)
 * [Block defintions](https://raw.githubusercontent.com/alejandroliu/pmimporter/master/classlib/pmimporter/blocks.txt)
 * [Minecraft PC data values](http://minecraft.gamepedia.com/Data_values)
 * [Minecraft PE data values](http://minecraft.gamepedia.com/Data_values_%28Pocket_Edition%29)
 
-Issues and Bugs
----------------
+## Issues and Bugs
+
 
 * Performance is quite poor.  It takes me 5 minutes to process a small
   map on Linux.  Large maps can easily take days.
@@ -277,6 +214,12 @@ Todo
 
 ## Changes
 
+* 2.0:
+  - removed commands: entities, dumpchunk
+  - syntax of sub-commands changed
+  - PocketMine-MP plugin has been discontinued
+  - Major speed improvements
+  - Merge maps at a chunk level.
 * 1.5upd2: Update
   - Added new blocks since 0.10
 * 1.5upd1: Bugfix
@@ -306,8 +249,8 @@ Todo
   * Added support for PMF maps from PocketMine v1.3.
 * 1.0 : First release
 
-Copyright
----------
+## Copyright
+
 
 Some of the code used in this program come from PocketMine-MP,
 licensed under GPL.

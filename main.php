@@ -31,8 +31,9 @@ if (in_array($argv[0],array("version","help"))) {
 	require_once(CLASSLIB_DIR.'autoload.php');
 	exit;
 }
+
 require_once(CLASSLIB_DIR.'autoload.php');
-if (is_file(CLASSLIB_DIR."preload.php")) require_once(CLASSLIB_DIR."preload.php");
+//if (is_file(CLASSLIB_DIR."preload.php")) require_once(CLASSLIB_DIR."preload.php");
 
 if (is_readable("phar://pmimporter.phar/scripts/$argv[0].php")) {
 	require_once("phar://pmimporter.phar/scripts/$argv[0].php");

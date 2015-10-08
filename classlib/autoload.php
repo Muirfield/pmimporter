@@ -5,14 +5,15 @@ error_reporting(E_ALL);
 if (!defined('CLASSLIB_DIR')) define('CLASSLIB_DIR',dirname(realpath(__FILE__)).'/');
 
 function __autoload($classname) {
-	//echo "autoload $classname\n";
+	if (class_exists($classname,false)) return;
+
 	$file = strtr($classname,"\\","/").".php";
 	if (is_readable(CLASSLIB_DIR.$file)) {
 		require_once(CLASSLIB_DIR.$file);
-		if (method_exists($classname,'__init')) $classname::__init();
-		return;
+	} else {
+		require_once($file);
 	}
-	require_once($file);
+	if (method_exists($classname,'__init')) $classname::__init();
 }
 
 // Some hard coding...

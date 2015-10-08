@@ -57,7 +57,8 @@ will be imported into the existing world.
 Options:
 
 * --format=_format_
-  - sets the output format if the destination is a new map.
+  - sets the output format if the destination is a new map.  Defaults to
+	  **mcregion**.  Possible options: **anvil**, **mcregion**, **LevelDB**.
 * --threads=_cores_
   - Will spawn _cores_ threads to process chunks.
 * --yoff=_offset_

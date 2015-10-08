@@ -74,15 +74,9 @@ interface LevelFormat {
 	/**
 	 * @param int $cX
 	 * @param int $cZ
-	 * @param str $data
+	 * @param Chunk $chunk
 	 */
-	public function writeChunk($cX,$cZ,$data);
-	/**
-	 * @param int $cX
-	 * @param int $cZ
-	 * @return str
-	 */
-	public function readChunk($cX,$cZ);
+	public function putChunk($cX,$cZ,Chunk $chunk);
 	/**
 	 * @param int $cX
 	 * @param int $cZ

@@ -1,8 +1,8 @@
 <?php
 namespace pmimporter\generic;
 use pmimporter\generic\BaseChunk;
+use pmimporter\LevelFormat;
 use pmsrc\utils\Binary;
-
 use pmsrc\nbt\NBT;
 use pmsrc\nbt\tag\Byte;
 use pmsrc\nbt\tag\ByteArray;
@@ -64,4 +64,5 @@ abstract class PcChunk extends BaseChunk {
 
 		return $nbt;
 	}
+	abstract public function toBinary();
 }

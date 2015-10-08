@@ -2,6 +2,7 @@
 namespace pmimporter\generic;
 
 use pmimporter\LevelFormat;
+use pmimporter\Chunk;
 use pmimporter\LevelFormatManager;
 use pmimporter\RegionLoader;
 use pmimporter\Lock;
@@ -112,5 +113,9 @@ abstract class PcFormat implements LevelFormat {
 		unset($lock);
 		return $chunk;
 	}
+	public function putChunk($cX,$cZ,Chunk $chunk) {
+		$this->writeChunk($cX,$cZ,$chunk->toBinary());
+	}
+
 	abstract protected function getFileExtension();
 }

@@ -84,8 +84,7 @@ abstract class LevelFormatManager{
 		//$data["entities"] = ;
 		//$data["tiles"] = ;
 		$newChunk = $dst->newChunk($data);
-		$dst->writeChunk($x,$z,$newChunk->toBinary());
-
+		$dst->putChunk($x,$z,$newChunk);
 	}
 
 }

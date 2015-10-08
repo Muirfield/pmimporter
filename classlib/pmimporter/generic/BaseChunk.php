@@ -13,7 +13,7 @@ use pmsrc\nbt\tag\Int;
 use pmsrc\nbt\tag\IntArray;
 use pmsrc\nbt\tag\Long;
 
-abstract class BaseChunk implements Chunk {
+class BaseChunk implements Chunk {
 	protected $level;
 	protected $xPos;
 	protected $zPos;

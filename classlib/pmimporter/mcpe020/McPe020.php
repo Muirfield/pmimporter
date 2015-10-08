@@ -7,6 +7,10 @@ use pmimporter\generic\BaseChunk;
 use pmsrc\utils\Binary;
 use pmsrc\math\Vector3;
 use pmsrc\nbt\NBT;
+use pmsrc\nbt\tag\Double;
+use pmsrc\nbt\tag\Int;
+
+
 use pocketmine_1_3\PocketChunkParser;
 
 class McPe020 extends ReadOnlyFormat {
@@ -121,14 +125,20 @@ class McPe020 extends ReadOnlyFormat {
 		$min_x = $x << 4; $max_x = ($x << 4) + 15;
 		$min_z = $z << 4; $max_z = ($z << 4) + 15;
 
+
 		if (isset($this->nbt["Entities"])) {
 			$data["entities"] = [];
 			foreach ($this->nbt["Entities"]->getValue() as $n) {
-				if (!isset($n->Pos) || !isset($n->id) || count($ent->Pos) !=3) continue;
+				if (!isset($n->Pos) || !isset($n->id) || count($n->Pos) !=3) continue;
 				list($x,$y,$z) = $n->Pos;
 				if ($x < $min_x || $x > $max_x || $z < $min_z || $z > $max_z) continue;
 				$cc = clone $n;
-				$data[$a][] = $cc;
+				if ($yoff != 0) {
+					$y -= $yoff;
+					if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
+					$cc->Pos[1] = new Double("",$y);
+				}
+				$data["entities"][] = $cc;
 			}
 		}
 
@@ -139,7 +149,13 @@ class McPe020 extends ReadOnlyFormat {
 					if ($n->x->getValue() < $min_x || $n->x->getValue() > $max_x ||
 						$n->z->getValue() < $min_z || $n->z->getValue() > $max_z)
 						continue;
-					$tiles[] = clone $n;
+					$cc = clone $n;
+					if ($yoff != 0) {
+						$y = $cc->y->getValue() - $yoff;
+						if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
+						$cc->y->setValue($y);
+					}
+					$data["tiles"][] = $cc;
 				}
 			}
 		}

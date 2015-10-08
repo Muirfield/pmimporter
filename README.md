@@ -213,13 +213,31 @@ using `rules`.
     copied but are usually ignored by PocketMine.
 * Conversion table could be better.  I am open to suggestions.
 
-Todo
-----
+# Todo
 
-- merge chunks ... by selecting square regions and offsets
-  - limit this at region|chunk resolution.
-  - Always specify corners and merge
-* Add Shift regions option to Copier.php
+* Finish LevelDB
+  - reading
+	- writing
+* Copy Entities
+  - reading: anvil, mcregion, mcpe020, leveldb
+	- writing: anvil, mcregion, level
+* Check Entities
+* Copy Tiles
+	- reading: anvil, mcregion, mcpe020, pmf, leveldb
+	- writing: anvil, mcregion, leveld
+* Check Tiles
+* Re-write documentation
+* Testing
+  - conversion
+	- features
+
+| reading\writing | anvil | mcregion | LevelDB |
+|-----------------|-------|----------|---------|
+| mcregion        |       |          |         |
+| anvil           |       |          |         |
+| LevelDB         |       |          |         |
+| McPe020         |       |          |         |
+| PMF1.3          |       |          |         |
 
 ## Changes
 

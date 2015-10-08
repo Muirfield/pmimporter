@@ -137,7 +137,7 @@ class Pm13 extends ReadOnlyFormat {
 				if ($tile["x"] < $min_x || $tile["x"] > $max_x ||
 					$tile["z"] < $min_z || $tile["z"] > $max_z) continue;
 				if ($yoff != 0) {
-					$tile["y"] -= $yoff;
+					$tile["y"] += $yoff;
 					if ($tile["y"] < 0 || $tile["y"] > PM_MAX_HEIGHT) continue;
 				}
 			} else {

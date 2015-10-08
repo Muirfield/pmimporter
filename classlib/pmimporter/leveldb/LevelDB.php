@@ -5,6 +5,8 @@ use pmimporter\LevelFormat;
 use pmimporter\LevelFormatManager;
 use pmimporter\Lock;
 use pmimporter\Shifter;
+use pmimporter\Chunk;
+use pmimporter\generic\BaseChunk;
 
 use pmsrc\utils\Binary;
 use pmsrc\nbt\NBT;
@@ -152,13 +154,13 @@ class LevelDB implements LevelFormat {
 			$reader->read($entityData,true);
 			$data["entities"] = $reader->getData();
 			if (!is_array($data["entities"])) $data["entities"] = [$data["entities"]];
-			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],$yoff);
+			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],0,$yoff,0);
 		}
 		if ($tileData !== false) {
 			$reader->read($tileData,true);
 			$data["tiles"] = $reader->getData();
 			if (!is_array($data["tiles"])) $data["tiles"] = [$data["tiles"]];
-			if ($yoff != 0) $data["tiles"] = Shifter::entities($data["$tiles"],$yoff);
+			if ($yoff != 0) $data["tiles"] = Shifter::tiles($data["tiles"],0,$yoff,0);
 		}
 
 		if ($terrain !== false) {
@@ -198,8 +200,21 @@ class LevelDB implements LevelFormat {
 
 			}
 			$data["heightMap"] = [];
-			foreach(unpack("C*", substr($terrain, $offset, 256)) as $c) {
-				$data["heightMap"][] = $c - $yoff;
+			if ($yoff == 0) {
+				foreach(unpack("C*", substr($terrain, $offset, 256)) as $c) {
+					$data["heightMap"][] = $c;
+				}
+			} else {
+				foreach(unpack("C*", substr($terrain, $offset, 256)) as $c) {
+					$c = $c + $yoff;
+					if ($c < 0) {
+					  $c = 0;
+					} elseif ($c >= PM_MAX_HEIGHT) {
+						$c = PM_MAX_HEIGHT-1;
+					}
+					$data["heightMap"][] = $c;
+				}
+
 			}
 			$offset += 256;
 			$data["biomeColors"] = [];
@@ -211,9 +226,9 @@ class LevelDB implements LevelFormat {
 		return new BaseChunk($this,$data);
 	}
 	public function putChunk($cX,$cZ,Chunk $chunk) {
-		die(__METHOD__.","__LINE__.": TODO\n");
+		die(__METHOD__.",".__LINE__.": TODO\n");
 	}
 	public function newChunk(array &$data) {
-		die(__METHOD__.","__LINE__.": TODO\n");
+		die(__METHOD__.",".__LINE__.": TODO\n");
 	}
 }

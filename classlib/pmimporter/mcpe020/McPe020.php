@@ -134,7 +134,7 @@ class McPe020 extends ReadOnlyFormat {
 				if ($x < $min_x || $x > $max_x || $z < $min_z || $z > $max_z) continue;
 				$cc = clone $n;
 				if ($yoff != 0) {
-					$y -= $yoff;
+					$y += $yoff;
 					if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
 					$cc->Pos[1] = new Double("",$y);
 				}
@@ -151,7 +151,7 @@ class McPe020 extends ReadOnlyFormat {
 						continue;
 					$cc = clone $n;
 					if ($yoff != 0) {
-						$y = $cc->y->getValue() - $yoff;
+						$y = $cc->y->getValue() + $yoff;
 						if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
 						$cc->y->setValue($y);
 					}

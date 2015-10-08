@@ -32,12 +32,12 @@ class McrChunk extends PcChunk {
 		if(isset($nbt->Entities) && ($nbt->Entities instanceof Enum)) {
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$data["entities"] = $nbt->Entities->getValue();
-			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],$yoff);
+			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],0,$yoff,0);
 		}
 		if(isset($nbt->TileEntities) && ($nbt->TileEntities instanceof Enum)) {
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$data["tiles"] = $nbt->TileEntities->getValue();
-			if ($yoff != 0) $data["tiles"] = Shifter::entities($data["$tiles"],$yoff);
+			if ($yoff != 0) $data["tiles"] = Shifter::tiles($data["tiles"],0,$yoff,0);
 		}
 
 		if ($yoff == 0) {

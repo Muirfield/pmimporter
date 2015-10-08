@@ -33,7 +33,16 @@ abstract class PcChunk extends BaseChunk {
 				if ($yoff == 0) {
 					$data["heightMap"] = $heights;
 				} else {
-					
+					$data["heightMap"] = [];
+					foreach ($heights as $h) {
+						$h = $h + $yoff;
+						if ($h < 0) {
+							$h = 0;
+						} elseif ($h >= PM_MAX_HEIGHT) {
+							$h = PM_MAX_HEIGHT-1;
+						}
+						$data["heightMap"][] = $h;
+					}
 				}
 			}
 		}

@@ -8,8 +8,7 @@ interface Chunk {
 	 * @param $data - input to initialize chunk
 	 */
 	public function __construct(LevelFormat $fmt,array &$data);
-	static public function fromBinary(LevelFormat $fmt, &$data, $yoff = 0);
-	public function toBinary();
+
 	public function getLevel();
 	public function getBlocks();
 	public function getRawBlocks();

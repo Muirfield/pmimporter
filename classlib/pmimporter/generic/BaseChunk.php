@@ -98,6 +98,13 @@ class BaseChunk implements Chunk {
 	public function getHeightMap() {
 		return $this->heightMap;
 	}
+	public function getEntities() {
+		return $this->entities;
+	}
+	public function getTiles() {
+		return $this->tiles;
+	}
+
 	public function isGenerated() {
 		return $this->generated;
 	}

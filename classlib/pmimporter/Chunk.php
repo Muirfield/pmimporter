@@ -20,6 +20,8 @@ interface Chunk {
 	public function getRawSkyLight();
 	public function getBiomeColors();
 	public function getHeightMap();
+	public function getEntities();
+	public function getTiles();
 	public function isGenerated();
 	public function isPopulated();
 	public function isLightPopulated();

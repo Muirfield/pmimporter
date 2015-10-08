@@ -66,32 +66,38 @@ abstract class Shifter{
     }
     return $output;
   }
-  static public function entities($data,$yoff = 0) {
-    if ($yoff == 0) return $data;
+  static public function entities($data,$xoff =0, $yoff = 0, $zoff =0) {
+    if ($xoff == 0 && $yoff == 0 && $zoff == 0) return $data;
     $output = [];
     foreach ($data as $s) {
       $d = clone $s;
       if (isset($d->Pos) && count($d->Pos) == 3) {
-        $y = $d->Pos[1]->getValue() - $yoff;
-        if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
-        $d->Pos[1]->setValue($y);
+        if ($xoff !== 0) $d->Pos[0]->setValue($d->Pos[0]->getValue() + $xoff);
+        if ($yoff !== 0) {
+          $y = $d->Pos[1]->getValue() + $yoff;
+          if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
+          $d->Pos[1]->setValue($y);
+        }
+        if ($zoff !== 0) $d->Pos[3]->setValue($d->Pos[3]->getValue() + $zoff);
       }
       $output[] = $d;
     }
     return $output;
   }
-  static public function tiles($data,$yoff = 0) {
-    if ($yoff == 0) return $data;
+  static public function tiles($data,$xoff = 0, $yoff = 0, $zoff) {
+    if ($xoff == 0 && $yoff == 0 && $zoff == 0) return $data;
     $output = [];
     foreach ($data as $s) {
       $d = clone $s;
-      if (isset($d->y)) {
-        $y = $d->y->getValue() - $yoff;
+      if ($xoff !== 0 && isset($d->x)) $d->x->setValue($d->x->getValue() + $xoff);
+      if ($yoff !== 0 && isset($d->y)) {
+        $y = $d->y->getValue() + $yoff;
         if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
         $d->y->setValue($y);
       }
       $output[] = $d;
     }
+    if ($zoff !== 0 && isset($d->z)) $d->z->setValue($d->z->getValue() + $zoff);
     return $output;
   }
 }

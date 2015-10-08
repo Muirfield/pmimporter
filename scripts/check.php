@@ -5,6 +5,7 @@ if (!defined('CLASSLIB_DIR'))
 require_once(CLASSLIB_DIR."common.php");
 use pmimporter\LevelFormatManager;
 use pmimporter\Blocks;
+use pmimporter\Entities;
 
 define('CMD',array_shift($argv));
 // Handle options
@@ -89,6 +90,16 @@ foreach ($chunks as $chunk) {
 			incr($stats,ord($str{$i}));
 		}
 	}
+	foreach ($chunk->getEntities() as $e) {
+		$id = $e->id->getValue();
+		if ($id === 64 || $id === "Item") {
+			$id = "Item(".$e->Item->id->getValue().")";
+		}
+		incr($stats,"ENT:".$id);
+	}
+	foreach ($chunk->getTiles() as $t) {
+		incr($stats,"TILE:".$t->id->getValue());
+	}
 	$heightMap = $chunk->getHeightMap();
 	foreach ($heightMap as $h) {
 		if (!isset($stats["Height:Max"])) {
@@ -123,26 +134,11 @@ foreach ($sorted as $k) {
 	if (is_numeric($k)) {
 		$v = Blocks::getBlockById($k);
 		$v = $v !== null ? "$v ($k)" : "*Unsupported* ($k)";
+	} elseif (preg_match('/^ENT:(\d+)$/',$k,$mv)) {
+		$v = Entities::getEntityById($mv[1]);
+		$v = $v !== null ? "ENT:$v ($mv[1])" : "ENT:*Unknown* ($mv[1])";
 	} else {
 		$v = $k;
 	}
 	echo "  $v:\t".$stats[$k]."\n";
 }
-
-/*
-	foreach ($chunk->getEntities() as $entity) {
-		if (!isset($entity->id)) continue;
-		if ($entity->id->getValue() == "Item") {
-			incr($stats,"ENTITY:Item:".$entity->Item->id->getValue());
-			continue;
-		}
-		incr($stats,"ENTITY:".$entity->id->getValue());
-
-	}
-	foreach ($chunk->getTileEntities() as $tile) {
-		if (!isset($tile->id)) continue;
-		incr($stats,"TILE:".$tile->id->getValue());
-	}
-}
-
-*/

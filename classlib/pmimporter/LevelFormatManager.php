@@ -2,6 +2,7 @@
 namespace pmimporter;
 use pmimporter\LevelFormat;
 use pmimporter\Chunk;
+use pmimporter\Shifter;
 
 abstract class LevelFormatManager{
 	protected static $formats = [];
@@ -80,9 +81,15 @@ abstract class LevelFormatManager{
 			$data["blockLight"] = $chunk->getBlockLight();
 			$data["skyLight"] = $chunk->getSkyLight();
 		}
-
-		//$data["entities"] = ;
-		//$data["tiles"] = ;
+		if ($adjX == 0 && $adjZ == 0) {
+			$data["entities"] = $chunk->getEntities();
+			$data["tiles"] = $chunk->getTiles();
+		} else {
+			$xoff = $adjX << 4;
+			$zoff = $adjZ << 4;
+			$data["entities"] = Shifter::entities($chunk->getEntities(),$xoff,0,$zoff);
+			$data["tiles"] = Shifter::tiles($chunk->getTiles(),$xoff,0,$zoff);
+		}
 		$newChunk = $dst->newChunk($data);
 		$dst->putChunk($x,$z,$newChunk);
 	}

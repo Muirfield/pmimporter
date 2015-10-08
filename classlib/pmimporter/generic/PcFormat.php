@@ -46,7 +46,7 @@ abstract class PcFormat implements LevelFormat {
 		// Create a new world...
 		//
 		if (!file_exists($path."/region")) mkdir($path."/region",0777);
-		$levelData = new Compound("Data", [
+		$levelData = new CompoundTag("Data", [
 												"hardcore"=>new ByteTag("hardcore",0),
 												"initialized"=>new ByteTag("initialized",1),
 												"GameType"=>new IntTag("GameType",0),

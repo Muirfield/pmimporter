@@ -107,6 +107,7 @@ class Pm13 extends ReadOnlyFormat {
 				}
 			}
 		}
+		$data["tiles"] = $this->getTileEntities($cX,$cZ,$yoff);
 		return new BaseChunk($this,$data);
 	}
 	protected static function convertInventory($name,$src) {

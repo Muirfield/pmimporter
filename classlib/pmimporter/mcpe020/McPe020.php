@@ -159,7 +159,7 @@ class McPe020 extends ReadOnlyFormat {
 				}
 			}
 		}
-		return new BaseChunk($this,$data);
+		return $this->newChunk($data);
 	}
 
 }

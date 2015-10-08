@@ -2,6 +2,7 @@
 namespace pmimporter\generic;
 //use pmsrc\math\Vector3;
 use pmimporter\Chunk;
+use pmimporter\generic\BaseChunk;
 use pmimporter\LevelFormat;
 
 abstract class ReadOnlyFormat implements LevelFormat {
@@ -9,9 +10,9 @@ abstract class ReadOnlyFormat implements LevelFormat {
     return false;
   }
 	public function putChunk($cX,$cZ,Chunk $chunk) {
-    die ($this::getFormatName().": format does not support\n");
+    die ($this::getFormatName().": format does not support writing\n");
   }
 	public function newChunk(array &$data) {
-    die ("INTERNAL ERROR: ".__METHOD__."\n");
+		return new BaseChunk($this,$data);
   }
 }

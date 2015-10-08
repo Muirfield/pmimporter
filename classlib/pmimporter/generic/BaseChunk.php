@@ -4,15 +4,6 @@ use pmimporter\Chunk;
 use pmimporter\LevelFormat;
 use pmsrc\utils\Binary;
 
-use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Byte;
-use pmsrc\nbt\tag\ByteArray;
-use pmsrc\nbt\tag\Compound;
-use pmsrc\nbt\tag\Enum;
-use pmsrc\nbt\tag\Int;
-use pmsrc\nbt\tag\IntArray;
-use pmsrc\nbt\tag\Long;
-
 class BaseChunk implements Chunk {
 	protected $level;
 	protected $xPos;

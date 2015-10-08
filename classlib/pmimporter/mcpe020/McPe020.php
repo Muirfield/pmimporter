@@ -7,9 +7,6 @@ use pmimporter\generic\BaseChunk;
 use pmsrc\utils\Binary;
 use pmsrc\math\Vector3;
 use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Double;
-use pmsrc\nbt\tag\Int;
-
 
 use pocketmine_1_3\PocketChunkParser;
 
@@ -136,7 +133,7 @@ class McPe020 extends ReadOnlyFormat {
 				if ($yoff != 0) {
 					$y += $yoff;
 					if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
-					$cc->Pos[1] = new Double("",$y);
+					$cc->Pos[1]->setValue($y);
 				}
 				$data["entities"][] = $cc;
 			}

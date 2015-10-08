@@ -23,18 +23,17 @@ namespace pmsrc\nbt\tag;
 
 use pmsrc\nbt\NBT;
 
-class String extends NamedTag{
+class ByteTag extends NamedTag{
 
 	public function getType(){
-		return NBT::TAG_String;
+		return NBT::TAG_Byte;
 	}
 
 	public function read(NBT $nbt){
-		$this->value = $nbt->get($nbt->getShort());
+		$this->value = $nbt->getByte();
 	}
 
 	public function write(NBT $nbt){
-		$nbt->putShort(strlen($this->value));
-		$nbt->put($this->value);
+		$nbt->putByte($this->value);
 	}
 }

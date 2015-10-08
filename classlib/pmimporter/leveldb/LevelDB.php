@@ -10,11 +10,11 @@ use pmimporter\generic\BaseChunk;
 
 use pmsrc\utils\Binary;
 use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Byte;
-use pmsrc\nbt\tag\Compound;
-use pmsrc\nbt\tag\Int;
-use pmsrc\nbt\tag\Long;
-use pmsrc\nbt\tag\String;
+use pmsrc\nbt\tag\ByteTag;
+use pmsrc\nbt\tag\CompoundTag;
+use pmsrc\nbt\tag\IntTag;
+use pmsrc\nbt\tag\LongTag;
+use pmsrc\nbt\tag\StringTag;
 use pmsrc\math\Vector3;
 
 class LevelDB implements LevelFormat {
@@ -69,24 +69,24 @@ class LevelDB implements LevelFormat {
 		// Create a new world...
 		//
 		if (!file_exists($path."/db")) mkdir($path."/db",0777);
-		$levelData = new Compound("", [
-												"hardcore"=>new Byte("hardcore",0),
-												"initialized"=>new Byte("initialized",1),
-												"GameType"=>new Int("GameType",0),
-												"generatorVersion"=>new Int("generatorVersion",1), // 2 in MCPE
-												"SpawnX" => new Int("SpawnX",$settings["spawn"]->x),
-												"SpawnY" => new Int("SpawnY",$settings["spawn"]->y),
-												"SpawnZ" => new Int("SpawnZ",$settings["spawn"]->z),
-												"version" => new Int("version",19133),
-												"DayTime" => new Int("DayTime",0),
-												"LastPlayed" => new Long("LastPlayed",microtime(true)*1000),
-												"RandomSeed" => new Long("RandomSeed",$settings["seed"]),
-												"SizeOnDisk" => new Long("SizeOnDisk",0),
-												"Time" => new Long("Time",0),
-												"generatorName" => new String("generatorName",$settings["generator"]),
-												"generatorOptions" => new String("generatorOptions",$settings["presets"]),
-												"LevelName" => new String("LevelName",basename($path)),
-												"GameRules" => new Compound("GameRules",[])
+		$levelData = new CompoundTag("", [
+												"hardcore"=>new ByteTag("hardcore",0),
+												"initialized"=>new ByteTag("initialized",1),
+												"GameType"=>new IntTag("GameType",0),
+												"generatorVersion"=>new IntTag("generatorVersion",1), // 2 in MCPE
+												"SpawnX" => new IntTag("SpawnX",$settings["spawn"]->x),
+												"SpawnY" => new IntTag("SpawnY",$settings["spawn"]->y),
+												"SpawnZ" => new IntTag("SpawnZ",$settings["spawn"]->z),
+												"version" => new IntTag("version",19133),
+												"DayTime" => new IntTag("DayTime",0),
+												"LastPlayed" => new LongTag("LastPlayed",microtime(true)*1000),
+												"RandomSeed" => new LongTag("RandomSeed",$settings["seed"]),
+												"SizeOnDisk" => new LongTag("SizeOnDisk",0),
+												"Time" => new LongTag("Time",0),
+												"generatorName" => new StringTag("generatorName",$settings["generator"]),
+												"generatorOptions" => new StringTag("generatorOptions",$settings["presets"]),
+												"LevelName" => new StringTag("LevelName",basename($path)),
+												"GameRules" => new CompoundTag("GameRules",[])
 											]);
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData($levelData);

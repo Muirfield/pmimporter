@@ -23,7 +23,7 @@ namespace pmsrc\nbt\tag;
 
 use pmsrc\nbt\NBT;
 
-class End extends Tag{
+class EndTag extends Tag{
 
 	public function getType(){
 		return NBT::TAG_End;

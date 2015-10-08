@@ -23,28 +23,17 @@ namespace pmsrc\nbt\tag;
 
 use pmsrc\nbt\NBT;
 
-#include <rules/NBT.h>
-
-class IntArray extends NamedTag{
+class FloatTag extends NamedTag{
 
 	public function getType(){
-		return NBT::TAG_IntArray;
+		return NBT::TAG_Float;
 	}
 
 	public function read(NBT $nbt){
-		 [];
-		$size = $nbt->getInt();
-		$this->value = array_values(unpack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", $nbt->get($size * 4)));
+		$this->value = $nbt->getFloat();
 	}
 
 	public function write(NBT $nbt){
-		$nbt->putInt(count($this->value));
-		$nbt->put(pack($nbt->endianness === NBT::LITTLE_ENDIAN ? "V*" : "N*", ...$this->value));
-	}
-
-	public function __toString(){
-		$str = get_class($this) . "{\n";
-		$str .= implode(", ", $this->value);
-		return $str . "}";
+		$nbt->putFloat($this->value);
 	}
 }

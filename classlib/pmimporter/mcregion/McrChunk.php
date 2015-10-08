@@ -8,13 +8,13 @@ use pmimporter\Blocks;
 use pmimporter\Shifter;
 
 use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Byte;
-use pmsrc\nbt\tag\ByteArray;
-use pmsrc\nbt\tag\Compound;
-use pmsrc\nbt\tag\Enum;
-use pmsrc\nbt\tag\Int;
-use pmsrc\nbt\tag\IntArray;
-use pmsrc\nbt\tag\Long;
+use pmsrc\nbt\tag\ByteTag;
+use pmsrc\nbt\tag\ByteArrayTag;
+use pmsrc\nbt\tag\CompoundTag;
+use pmsrc\nbt\tag\EnumTag;
+use pmsrc\nbt\tag\IntTag;
+use pmsrc\nbt\tag\IntArrayTag;
+use pmsrc\nbt\tag\LongTag;
 
 class McrChunk extends PcChunk {
 
@@ -24,17 +24,17 @@ class McrChunk extends PcChunk {
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();
-		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)) return null;
+		if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)) return null;
 
 		$nbt = $chunk->Level;
 		$data = self::fromNBT($nbt,$yoff);
 
-		if(isset($nbt->Entities) && ($nbt->Entities instanceof Enum)) {
+		if(isset($nbt->Entities) && ($nbt->Entities instanceof EnumTag)) {
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$data["entities"] = $nbt->Entities->getValue();
 			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],0,$yoff,0);
 		}
-		if(isset($nbt->TileEntities) && ($nbt->TileEntities instanceof Enum)) {
+		if(isset($nbt->TileEntities) && ($nbt->TileEntities instanceof EnumTag)) {
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$data["tiles"] = $nbt->TileEntities->getValue();
 			if ($yoff != 0) $data["tiles"] = Shifter::tiles($data["tiles"],0,$yoff,0);
@@ -77,16 +77,16 @@ class McrChunk extends PcChunk {
 		if (count($this->tiles) > 0) $nbt->TileEntities = self::addNBT("TileEntities",$this->tiles);
 
 		if ($this->isGenerated()) {
-			$nbt->Blocks = new ByteArray("Blocks",$this->blocks);
-			$nbt->Data = new ByteArray("Data", $this->meta);
-			$nbt->BlockLight = new ByteArray("BlockLight", $this->blockLight);
-			$nbt->SkyLight = new ByteArray("SkyLight", $this->skyLight);
-			$nbt->BiomeColors = new IntArray("BiomeColors", $this->biomeColors);
-			$nbt->HeightMap = new IntArray("HeightMap", $this->heightMap);
+			$nbt->Blocks = new ByteArrayTag("Blocks",$this->blocks);
+			$nbt->Data = new ByteArrayTag("Data", $this->meta);
+			$nbt->BlockLight = new ByteArrayTag("BlockLight", $this->blockLight);
+			$nbt->SkyLight = new ByteArrayTag("SkyLight", $this->skyLight);
+			$nbt->BiomeColors = new IntArrayTag("BiomeColors", $this->biomeColors);
+			$nbt->HeightMap = new IntArrayTag("HeightMap", $this->heightMap);
 		}
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
-		$writer->setData(new Compound("", ["Level" => $nbt]));
+		$writer->setData(new CompoundTag("", ["Level" => $nbt]));
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 }

@@ -22,9 +22,9 @@
 namespace pmsrc\nbt\tag;
 
 use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Enum as TagEnum;
+use pmsrc\nbt\tag\EnumTag as TagEnum;
 
-class Enum extends NamedTag implements \ArrayAccess, \Countable{
+class EnumTag extends NamedTag implements \ArrayAccess, \Countable{
 
 	private $tagType;
 
@@ -108,42 +108,42 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 		for($i = 0; $i < $size and !$nbt->feof(); ++$i){
 			switch($this->tagType){
 				case NBT::TAG_Byte:
-					$tag = new Byte("");
+					$tag = new ByteTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Short:
-					$tag = new Short("");
+					$tag = new ShortTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Int:
-					$tag = new Int("");
+					$tag = new IntTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Long:
-					$tag = new Long("");
+					$tag = new LongTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Float:
-					$tag = new Float("");
+					$tag = new FloatTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Double:
-					$tag = new Double("");
+					$tag = new DoubleTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_ByteArray:
-					$tag = new ByteArray("");
+					$tag = new ByteArrayTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_String:
-					$tag = new String("");
+					$tag = new StringTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
@@ -153,12 +153,12 @@ class Enum extends NamedTag implements \ArrayAccess, \Countable{
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_Compound:
-					$tag = new Compound("");
+					$tag = new CompoundTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;
 				case NBT::TAG_IntArray:
-					$tag = new IntArray("");
+					$tag = new IntArrayTag("");
 					$tag->read($nbt);
 					$this->{$i} = $tag;
 					break;

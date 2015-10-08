@@ -23,17 +23,17 @@ namespace pmsrc\nbt\tag;
 
 use pmsrc\nbt\NBT;
 
-class Int extends NamedTag{
+class DoubleTag extends NamedTag{
 
 	public function getType(){
-		return NBT::TAG_Int;
+		return NBT::TAG_Double;
 	}
 
 	public function read(NBT $nbt){
-		$this->value = $nbt->getInt();
+		$this->value = $nbt->getDouble();
 	}
 
 	public function write(NBT $nbt){
-		$nbt->putInt($this->value);
+		$nbt->putDouble($this->value);
 	}
 }

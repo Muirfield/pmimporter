@@ -216,18 +216,7 @@ using `--rules`.
 
 # Todo
 
-* Finish LevelDB
-  - reading
-	- writing
-* Copy Entities
-  - reading: anvil, mcregion, mcpe020, leveldb
-	- writing: anvil, mcregion, level
-* Check Entities
-* Copy Tiles
-	- reading: anvil, mcregion, mcpe020, pmf, leveldb
-	- writing: anvil, mcregion, leveld
-* Check Tiles
-* Re-write documentation
+* Convert tiles|entities
 * Testing
   - conversion
 	- features
@@ -248,7 +237,8 @@ using `--rules`.
   - PocketMine-MP plugin has been discontinued
   - Major speed improvements
   - Imports chunks into existing maps.
-	- **TODO**: Initial LevelDB support
+	- Added PHP7 compatibility
+	- Initial LevelDB support
 * 1.5upd2: Update
   - Added new blocks since 0.10
 * 1.5upd1: Bugfix

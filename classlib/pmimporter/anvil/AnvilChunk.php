@@ -7,13 +7,13 @@ use pmimporter\LevelFormat;
 use pmimporter\Shifter;
 
 use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Byte;
-use pmsrc\nbt\tag\ByteArray;
-use pmsrc\nbt\tag\Compound;
-use pmsrc\nbt\tag\Enum;
-use pmsrc\nbt\tag\Int;
-use pmsrc\nbt\tag\IntArray;
-use pmsrc\nbt\tag\Long;
+use pmsrc\nbt\tag\ByteTag;
+use pmsrc\nbt\tag\ByteArrayTag;
+use pmsrc\nbt\tag\CompoundTag;
+use pmsrc\nbt\tag\EnumTag;
+use pmsrc\nbt\tag\IntTag;
+use pmsrc\nbt\tag\IntArrayTag;
+use pmsrc\nbt\tag\LongTag;
 
 class AnvilChunk extends PcChunk {
 	const SECTION_COUNT = 8;
@@ -22,17 +22,17 @@ class AnvilChunk extends PcChunk {
 		$reader = new NBT(NBT::BIG_ENDIAN);
 		$reader->readCompressed($binary, ZLIB_ENCODING_DEFLATE);
 		$chunk = $reader->getData();
-		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)) return null;
+		if(!isset($chunk->Level) or !($chunk->Level instanceof CompoundTag)) return null;
 		//echo "CHUNK: ".strlen($binary)." bytes - ";//##DEBUG
 		//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 		$nbt = $chunk->Level;
 		$data = self::fromNBT($nbt,$yoff);
-		if(isset($nbt->Entities) && $nbt->Entities instanceof Enum){
+		if(isset($nbt->Entities) && $nbt->Entities instanceof EnumTag){
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$data["entities"] = $nbt->Entities->getValue();
 			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],0,$yoff,0);
 		}
-		if(isset($nbt->TileEntities) && $nbt->TileEntities instanceof Enum){
+		if(isset($nbt->TileEntities) && $nbt->TileEntities instanceof EnumTag){
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$data["tiles"] = $nbt->TileEntities->getValue();
 			if ($yoff != 0) $data["tiles"] = Shifter::tiles($data["tiles"],0,$yoff,0);
@@ -43,12 +43,12 @@ class AnvilChunk extends PcChunk {
 		$data["meta"] = [];
 		$data["blockLight"] = [];
 		$data["skyLight"] = [];
-		if (isset($nbt->Sections) && ($nbt->Sections instanceof Enum)) {
+		if (isset($nbt->Sections) && ($nbt->Sections instanceof EnumTag)) {
 			if ($yoff == 0) {
 				// Handle the simplest case
 				//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 				foreach ($nbt->Sections as $section) {
-					if (!($section instanceof Compound)) continue;
+					if (!($section instanceof CompoundTag)) continue;
 					$y = (int)$section["Y"];
 					//echo "s($y)";
 					$data["blocks"][$y] = (string)$section["Blocks"];
@@ -62,7 +62,7 @@ class AnvilChunk extends PcChunk {
 				// Figure out what sections are available
 				$ptrs = [];
 				foreach ($nbt->Sections as $section) {
-					if (!($section instanceof Compound)) continue;
+					if (!($section instanceof CompoundTag)) continue;
 					$y = (int)$section["Y"];
 					$ptrs[$y] = &$section;
 				}
@@ -157,22 +157,22 @@ class AnvilChunk extends PcChunk {
 
 		if ($this->isGenerated() && count($this->blocks) > 0) {
 			// Create sections...
-			$nbt->Sections = new Enum("Sections",[]);
+			$nbt->Sections = new EnumTag("Sections",[]);
 			$nbt->Sections->setTagType(NBT::TAG_Compound);
 			foreach ($this->blocks as $y => $blocks) {
-				$nbt->Sections[$y] = new Compound(null,[
-					"Y" => new Byte("Y", $y),
-					"Blocks" => new ByteArray("Blocks",$blocks),
-					"Data" => new ByteArray("Data", isset($this->meta[$y]) ? $this->meta[$y] : str_repeat("\x00",2048)),
-					"SkyLight" => new ByteArray("Data", isset($this->skyLight[$y]) ? $this->skyLight[$y] : str_repeat("\xff",2048)),
-					"BlockLight" => new ByteArray("Data", isset($this->blockLight[$y]) ? $this->blockLight[$y] : str_repeat("\x00",2048)),
+				$nbt->Sections[$y] = new CompoundTag(null,[
+					"Y" => new ByteTag("Y", $y),
+					"Blocks" => new ByteArrayTag("Blocks",$blocks),
+					"Data" => new ByteArrayTag("Data", isset($this->meta[$y]) ? $this->meta[$y] : str_repeat("\x00",2048)),
+					"SkyLight" => new ByteArrayTag("Data", isset($this->skyLight[$y]) ? $this->skyLight[$y] : str_repeat("\xff",2048)),
+					"BlockLight" => new ByteArrayTag("Data", isset($this->blockLight[$y]) ? $this->blockLight[$y] : str_repeat("\x00",2048)),
 					]);
 			}
-			$nbt->BiomeColors = new IntArray("BiomeColors", $this->biomeColors);
-			$nbt->HeightMap = new IntArray("HeightMap", $this->heightMap);
+			$nbt->BiomeColors = new IntArrayTag("BiomeColors", $this->biomeColors);
+			$nbt->HeightMap = new IntArrayTag("HeightMap", $this->heightMap);
 		}
 		$writer = new NBT(NBT::BIG_ENDIAN);
-		$writer->setData(new Compound("", ["Level" => $nbt]));
+		$writer->setData(new CompoundTag("", ["Level" => $nbt]));
 		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
 	}
 	private function getBlockSection($blocks, $sy) {

@@ -8,11 +8,11 @@ use pocketmine_1_3\pmf\PMFLevel;
 
 use pmsrc\utils\Binary;
 use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Byte;
-use pmsrc\nbt\tag\Compound;
-use pmsrc\nbt\tag\Int;
-use pmsrc\nbt\tag\Long;
-use pmsrc\nbt\tag\String;
+use pmsrc\nbt\tag\ByteTag;
+use pmsrc\nbt\tag\CompoundTag;
+use pmsrc\nbt\tag\IntTag;
+use pmsrc\nbt\tag\LongTag;
+use pmsrc\nbt\tag\StringTag;
 use pmsrc\math\Vector3;
 
 define('CMD',array_shift($argv));
@@ -68,29 +68,29 @@ $dat = file_get_contents($fpath = $wpath."/level.dat");
 if ($dat === false) die("$wpath: unable to open level.dat\n");
 
 /////////////////////////////////////////////////////////////////////////////
-function modifyNbt(Compound $nbt, array $opts) {
+function modifyNbt(CompoundTag $nbt, array $opts) {
 	$changed = false;
 	foreach ($opts as $k=>$v) {
 		if ($v === false) continue;
 		switch ($k) {
 			case "name":
 				if (isset($nbt->LevelName) && $nbt->LevelName->getValue() == $v) continue;
-				$nbt->LevelName = new String("LevelName",$v);
+				$nbt->LevelName = new StringTag("LevelName",$v);
 				$changed = true;
 				break;
 			case "generator":
 				if (isset($nbt->generatorName) && $nbt->generatorName->getValue() == $v) continue;
-				$nbt->generatorName = new String("generatorName",$v);
+				$nbt->generatorName = new StringTag("generatorName",$v);
 				$changed = true;
 				break;
 			case "preset":
 				if (isset($nbt->generatorOptions) && $nbt->generatorOptions->getValue() == $v) continue;
-				$nbt->generatorOptions = new String("generatorOptions",$v);
+				$nbt->generatorOptions = new StringTag("generatorOptions",$v);
 				$changed = true;
 				break;
 			case "seed":
 				if (isset($nbt->RandomSeed) && $nbt->RandomSeed->getValue() == $v) continue;
-				$nbt->RandomSeed = new Long("RandomSeed",(int)$v);
+				$nbt->RandomSeed = new LongTag("RandomSeed",(int)$v);
 				$changed = true;
 				break;
 			case "spawn":
@@ -100,9 +100,9 @@ function modifyNbt(Compound $nbt, array $opts) {
 				if (isset($nbt->SpawnX) && $nbt->SpawnX->getValue() == $x &&
 						isset($nbt->SpawnY) && $nbt->SpawnY->getValue() == $y &&
 						isset($nbt->SpawnZ) && $nbt->SpawnZ->getVAlue() == $z) continue;
-				$nbt->SpawnX = new Int("SpawnX",(int)$x);
-				$nbt->SpawnY = new Int("SpawnY",(int)$y);
-				$nbt->SpawnZ = new Int("SpawnZ",(int)$z);
+				$nbt->SpawnX = new IntTag("SpawnX",(int)$x);
+				$nbt->SpawnY = new IntTag("SpawnY",(int)$y);
+				$nbt->SpawnZ = new IntTag("SpawnZ",(int)$z);
 				$changed = true;
 				break;
 			default:
@@ -136,7 +136,7 @@ if ((Binary::readLInt(substr($dat,0,4)) == 2
 	$changed = modifyNbt($lvdat,$opts);
 	if ($changed) {
 		echo "Updating $fpath\n";
-		$nbt->setData(new Compound(null,["Data"=>$lvdat]));
+		$nbt->setData(new CompoundTag(null,["Data"=>$lvdat]));
 		file_put_contents($fpath,$nbt->writeCompressed());
 	}
 }

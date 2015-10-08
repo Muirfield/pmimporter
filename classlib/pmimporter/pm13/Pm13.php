@@ -7,13 +7,13 @@ use pocketmine_1_3\pmf\PMFLevel;
 use pmsrc\math\Vector3;
 
 use pmsrc\nbt\NBT;
-use pmsrc\nbt\tag\Byte;
-use pmsrc\nbt\tag\ByteArray;
-use pmsrc\nbt\tag\Compound;
-use pmsrc\nbt\tag\Enum;
-use pmsrc\nbt\tag\Int;
-use pmsrc\nbt\tag\IntArray;
-use pmsrc\nbt\tag\Long;
+use pmsrc\nbt\tag\ByteTag;
+use pmsrc\nbt\tag\ByteArrayTag;
+use pmsrc\nbt\tag\CompoundTag;
+use pmsrc\nbt\tag\EnumTag;
+use pmsrc\nbt\tag\IntTag;
+use pmsrc\nbt\tag\IntArrayTag;
+use pmsrc\nbt\tag\LongTag;
 
 use pmimporter\generic\BaseChunk;
 
@@ -114,13 +114,13 @@ class Pm13 extends ReadOnlyFormat {
 		$items = [];
 		if (isset($src)) {
 			foreach ($src as $sl) {
-				$items[] = new Compound(false,[new Byte("Count",$sl["Count"]),
-														new Byte("Slot",$sl["Slot"]),
-														new Short("id",$sl["id"]),
-														new Short("Damage",$sl["Damage"])]);
+				$items[] = new CompoundTag(false,[new ByteTag("Count",$sl["Count"]),
+														new ByteTag("Slot",$sl["Slot"]),
+														new ShortTag("id",$sl["id"]),
+														new ShortTag("Damage",$sl["Damage"])]);
 			}
 		}
-		$nbt = new Enum($name,$items);
+		$nbt = new EnumTag($name,$items);
 		$nbt->setTagType(NBT::TAG_Compound);
 		return $nbt;
 	}
@@ -145,37 +145,37 @@ class Pm13 extends ReadOnlyFormat {
 			}
 			switch ($tile["id"]) {
 				case "sign":
-					$tiles[] =  new Compound("",[new String("id","sign"),
-															new String("Text1",$tile["Text1"]),
-															new String("Text2",$tile["Text2"]),
-															new String("Text3",$tile["Text3"]),
-															new String("Text4",$tile["Text4"]),
-															new Int("x",$tile["x"]),
-															new Int("y",$tile["y"]),
-															new Int("z",$tile["z"])]);
+					$tiles[] =  new CompoundTag("",[new StringTag("id","sign"),
+															new StringTag("Text1",$tile["Text1"]),
+															new StringTag("Text2",$tile["Text2"]),
+															new StringTag("Text3",$tile["Text3"]),
+															new StringTag("Text4",$tile["Text4"]),
+															new IntTag("x",$tile["x"]),
+															new IntTag("y",$tile["y"]),
+															new IntTag("z",$tile["z"])]);
 					break;
 				case "furnace":
-					$tiles[] = new Compound("",[new String("id","furnace"),
-														new Short("BurnTime",$tile["BurnTime"]),
-														new Short("BurnTicks",$tile["BurnTicks"]),
-														new Short("CookTime",$tile["CookTime"]),
-														new Short("CookTimeTotal",$tile["MaxTime"]),
+					$tiles[] = new CompoundTag("",[new StringTag("id","furnace"),
+														new ShortTag("BurnTime",$tile["BurnTime"]),
+														new ShortTag("BurnTicks",$tile["BurnTicks"]),
+														new ShortTag("CookTime",$tile["CookTime"]),
+														new ShortTag("CookTimeTotal",$tile["MaxTime"]),
 														self::convertInventory("Items",$tile["Items"]),
-														new Int("x",$tile["x"]),
-														new Int("y",$tile["y"]),
-														new Int("z",$tile["z"])]);
+														new IntTag("x",$tile["x"]),
+														new IntTag("y",$tile["y"]),
+														new IntTag("z",$tile["z"])]);
 					break;
 				case "chest":
-					$chest = [new String("id","chest"),
+					$chest = [new StringTag("id","chest"),
 								self::convertInventory("Items",$tile["Items"]),
-								new Int("x",$tile["x"]),
-								new Int("y",$tile["y"]),
-								new Int("z",$tile["z"])];
+								new IntTag("x",$tile["x"]),
+								new IntTag("y",$tile["y"]),
+								new IntTag("z",$tile["z"])];
 					if (isset($tile["pairx"]))
-						$chest[] = new Int("pairx",$tile["pairx"]);
+						$chest[] = new IntTag("pairx",$tile["pairx"]);
 					if (isset($tile["pairz"]))
-						$chest[] = new Int("pairz",$tile["pairz"]);
-					$tiles[] = new Compound("",$chest);
+						$chest[] = new IntTag("pairz",$tile["pairz"]);
+					$tiles[] = new CompoundTag("",$chest);
 					break;
 				default:
 					// Not supported tile Id

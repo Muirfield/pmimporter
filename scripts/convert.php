@@ -169,6 +169,13 @@ function copyNextChunk() {
 
 echo "Threads: ".$opts["threads"]."\n";
 
+// Do ONE chunk in the main thread to make sure all modules are indeed in
+// memory before we start forking
+list($cx,$cz) = array_pop($chunks);
+$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
+LevelFormatManager::importChunk($dst,$cx+$chgX,$cz+$chgZ,$chunk,$convert);
+if (count($chunks) == 0) exit;
+
 $workers = [];
 for ($c = $opts["threads"];$c--;) {
 	copyNextChunk();

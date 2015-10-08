@@ -27,15 +27,17 @@ class McrChunk extends PcChunk {
 		if(!isset($chunk->Level) or !($chunk->Level instanceof Compound)) return null;
 
 		$nbt = $chunk->Level;
-		$data = self::fromNBT($nbt);
+		$data = self::fromNBT($nbt,$yoff);
 
 		if(isset($nbt->Entities) && ($nbt->Entities instanceof Enum)) {
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$data["entities"] = $nbt->Entities->getValue();
+			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],$yoff);
 		}
 		if(isset($nbt->TileEntities) && ($nbt->TileEntities instanceof Enum)) {
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$data["tiles"] = $nbt->TileEntities->getValue();
+			if ($yoff != 0) $data["tiles"] = Shifter::entities($data["$tiles"],$yoff);
 		}
 
 		if ($yoff == 0) {

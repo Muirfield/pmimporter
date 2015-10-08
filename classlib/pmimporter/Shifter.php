@@ -2,7 +2,7 @@
 namespace pmimporter;
 
 abstract class Shifter{
-  static protected function down($input,$pad,$off,$bits) {
+  static public function down($input,$pad,$off,$bits) {
     $output = "";
     $pad = str_repeat($pad,$off);
     $len = (1<<$bits) - $off;
@@ -15,7 +15,7 @@ abstract class Shifter{
     }
     return $output;
   }
-  static protected function up($input,$pad,$off,$bits) {
+  static public function up($input,$pad,$off,$bits) {
     $output = "";
     $pad = str_repeat($pad,$off);
     $len = (1<<$bits) - $off;
@@ -28,7 +28,7 @@ abstract class Shifter{
     }
     return $output;
   }
-  static protected function nibbleDown($input,$pad0,$off,$bits) {
+  static public function nibbleDown($input,$pad0,$off,$bits) {
     $output = "";
     $pad = str_repeat($pad0,$off);
     $len = (1<<$bits) - $off;
@@ -46,7 +46,7 @@ abstract class Shifter{
     }
     return $output;
   }
-  static protected function nibbleUp($input,$pad0,$off,$bits) {
+  static public function nibbleUp($input,$pad0,$off,$bits) {
     $output = "";
     $pad = str_repeat($pad0,$off);
     $len = (1<<$bits) - $off;
@@ -63,6 +63,34 @@ abstract class Shifter{
           //echo "ox=$ox oz=$oz oy=$oy len=$len ".strlen($output)."\n";
         }
       }
+    }
+    return $output;
+  }
+  static public function entities($data,$yoff = 0) {
+    if ($yoff == 0) return $data;
+    $output = [];
+    foreach ($data as $s) {
+      $d = clone $s;
+      if (isset($d->Pos) && count($d->Pos) == 3) {
+        $y = $d->Pos[1]->getValue() - $yoff;
+        if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
+        $d->Pos[1]->setValue($y);
+      }
+      $output[] = $d;
+    }
+    return $output;
+  }
+  static public function tiles($data,$yoff = 0) {
+    if ($yoff == 0) return $data;
+    $output = [];
+    foreach ($data as $s) {
+      $d = clone $s;
+      if (isset($d->y)) {
+        $y = $d->y->getValue() - $yoff;
+        if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
+        $d->y->setValue($y);
+      }
+      $output[] = $d;
     }
     return $output;
   }

@@ -85,6 +85,7 @@ abstract class PcFormat implements LevelFormat {
 	}
 	public function getChunks() {
 		$chunks = [];
+		$lock = new Lock($this->path."/level.dat");
 		$files = glob($this->path."/region/r.*.".$this->getFileExtension());
 		foreach ($files as $f) {
 			$pp = [];
@@ -93,6 +94,7 @@ abstract class PcFormat implements LevelFormat {
 			$loader = new RegionLoader($this->path,$rx,$rz,$this->getFileExtension());
 			$loader->addChunks($chunks);
 		}
+		unset($lock);
 		return $chunks;
 	}
 	public function writeChunk($cX,$cZ,$data) {

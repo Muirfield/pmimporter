@@ -4,6 +4,7 @@ use pmimporter\generic\PcChunk;
 use pmimporter\RegionLoader;
 use pmimporter\Chunk;
 use pmimporter\LevelFormat;
+use pmimporter\Shifter;
 
 use pmsrc\nbt\NBT;
 use pmsrc\nbt\tag\Byte;
@@ -25,14 +26,16 @@ class AnvilChunk extends PcChunk {
 		//echo "CHUNK: ".strlen($binary)." bytes - ";//##DEBUG
 		//echo __METHOD__.",".__LINE__."\n";//##DEBUG
 		$nbt = $chunk->Level;
-		$data = self::fromNBT($nbt);
+		$data = self::fromNBT($nbt,$yoff);
 		if(isset($nbt->Entities) && $nbt->Entities instanceof Enum){
 			$nbt->Entities->setTagType(NBT::TAG_Compound);
 			$data["entities"] = $nbt->Entities->getValue();
+			if ($yoff != 0) $data["entities"] = Shifter::entities($data["entities"],$yoff);
 		}
 		if(isset($nbt->TileEntities) && $nbt->TileEntities instanceof Enum){
 			$nbt->TileEntities->setTagType(NBT::TAG_Compound);
 			$data["tiles"] = $nbt->TileEntities->getValue();
+			if ($yoff != 0) $data["tiles"] = Shifter::entities($data["$tiles"],$yoff);
 		}
 		//echo implode(", ",array_keys($data)). " : ";//##DEBUG
 

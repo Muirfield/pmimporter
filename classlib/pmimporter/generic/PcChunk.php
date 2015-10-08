@@ -15,7 +15,7 @@ use pmsrc\nbt\tag\Long;
 abstract class PcChunk extends BaseChunk {
 	const VERSION = 1;
 
-	protected static function fromNBT(Compound $nbt) {
+	protected static function fromNBT(Compound $nbt,$yoff = 0) {
 		$data = [];
 		$data["x"] = $nbt->xPos->getValue();
 		$data["z"] = $nbt->zPos->getValue();
@@ -29,7 +29,13 @@ abstract class PcChunk extends BaseChunk {
 		}
 		if (isset($nbt->HeightMap) && ($nbt->HeightMap instanceof IntArray)) {
 			$heights = $nbt->HeightMap->getValue();
-			if (count($heights) == 256) $data["heightMap"] = $heights;
+			if (count($heights) == 256) {
+				if ($yoff == 0) {
+					$data["heightMap"] = $heights;
+				} else {
+					
+				}
+			}
 		}
 		if (isset($nbt->TerrainGenerated)) $data["isGenerated"] = $nbt["TerrainGenerated"] > 0;
 		if (isset($nbt->TerrainPopulated)) $data["isPopulated"] = $nbt["TerrainPopulated"] > 0;

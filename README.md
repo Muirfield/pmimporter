@@ -15,7 +15,7 @@
 ## Description
 
 A collection of tools used for importing world maps for use with
-PocketMine-MP and Minecraft PE.
+PocketMine-MP.
 
 It supports the following formats:
 
@@ -23,32 +23,15 @@ It supports the following formats:
 - Anvil: Minecraft PC Edition v1.2 and better
 - PMF: PocketMine v1.3.  **READ-ONLY** format.
 - mcpe0.2.0: Minecraft PE finite worlds.   **READ-ONLY** format.
+- **INDEV** LevelDB: Minecraft PE v0.9.0 (or better) infinite worlds.
 
-**TODO:**
-- LevelDB: Minecraft PE v0.9.0 (or better) infinite worlds.
-
-
-
-
-
-
-
-
-
-* * *
-
-When importing Minecraft PC Edition world maps (Anvil and McRegion formats) it
-will analyze the used blocks to make sure that only blocks supported
-by Minecraft PE are generated.  It does this by either mapping these
-blocks or removing them.  This conversion/fitering can be tweaked with
-an user provided `rules` file.
-
-**TODO**
-Similarly, Tiles and Entities that are not supported by Minecraft PE
-are eliminated.
-
-This is done because using these unsupported features on a Minecraft
-PE client would cause the game to crash.
+When importing maps it will by default check the used blocks to make sure
+that only blocks supported by Minecraft PE are generated.  It does this by
+either mapping these blocks or removing them.  This conversion/fitering can
+be disabled or tweaked with an user provided `rules` file. Similarly, Tiles
+and Entities that are not supported by Minecraft PE are eliminated. This is
+done because using these on a Minecraft PE client that does not support them
+would cause the game to crash.
 
 ## Command Usage
 
@@ -58,137 +41,161 @@ In general, the command usage is:
 
 ### Sub-commands
 
-#### CONVERT
+#### convert
 
-	convert [-c rules.txt ] [-t count] [-f format] srcpath dstpath
+This is the main map importing command.
 
-Converts maps.
+	convert [options] srcpath dstpath
 
-* `-c rules` : Specify a rules conversion file.
-* `-t count` : Specifies the number of threads to run.
-* `-f format` : Specifies the output format.  Defaults to `mcregion`.
-* `-o offset` : Specifies the y-offset for the import.  A value for
-  the number of blocks you want to move the world *down*.  A negative
-  value will move the world *up*.  Be careful when moving the world
-  *down* that you do not remove the ground.
-* `srcpath` : Directory path to the source world.
-* `dstpath` : Directory path to create the new world.
+The _srcpath_ is a path to a folder tha contains a Minecraft/PocketMine
+world.
 
-Also, `convert` allows you to specify special settings to tweak the
-format reader/writer code.  These settings are specifc to each
-`format`. To configure you must pass the option:
+The _dstpath_ is a path to the destination Minecraft/PocketMine world.  If
+_dstpath_ does not exist a new world will be created.  If it exists, chunks
+will be imported into the existing world.
 
-* `--in.setting=value`  
-  for the input format settings.
-* `--out.setting-value`  
-  for the output format settings.
+Options:
 
-#### PMCHECK
+* --format=_format_
+  - sets the output format if the destination is a new map.
+* --threads=_cores_
+  - Will spawn _cores_ threads to process chunks.
+* --yoff=_offset_
+  - Offset blocks by the given _offset_ number of blocks.  If the number
+	  is negative, the world will be shifted **down**.  If the number is
+		positive, the world will be shifted **up**.
+* --adjchunk=_x,z_
+  - When writing chunks, these will be shifted by _x_ and/or _z_ chunks.
+* --rules=_file_
+  - Read additional translation rules from _file_.
+* --x=_n_, --min-x=_min_, --max-x=_max_
+  - Will limit the imported chunk region by the specified _min_ and _max_
+	  **x** values (inclusive).  The **--x** option is a shortcut for
+		specifying **--min-x** and **--max-x** both equal to _n_.
+	- The default is to process all chunks
+	- NOTE: Limits are applied **before** the **adjchunk** shifts are
+	  calculated.
+* --z=_n_, --min-z=_min_, --max-z=_max_
+  - Will limit the imported chunk region by the specified _min_ and _max_
+	  **z** values (inclusive).  The **--z** option is a shortcut for
+		specifying **--min-z** and **--max-z** both equal to _n_.
+	- The default is to process all chunks
+	- NOTE: Limits are applied **before** the **adjchunk** shifts are
+	  calculated.
+* --convert, --no-convert
+  - enable or disable block conversions/filtering.  **--convert** is the
+		default.
+* --clobber, --no-clobber
+  - If importing chunks to an existing world, if **--clobber** is specified,
+	  existing chunks will be overwritten.  The default is **--no-clobber** so
+		existing chunks will be skipped.
 
-	check worldpath [--all|[rX,rZ[:cX,cZ[+cX,cZ]]] ...]
+#### check
 
 Analyze the number of chunks, blocks, etc in a world map.
 
-* `worldpath` : Directory path to world to analyze.
-* `--all` : If specified it will analyze all regions.
-* `rX,rZ` : Region X,Z coordinates.
-* `:cX,cZ` : Specify individual chunks (in Chunk offsets, from 0 to
-  31) to analyze.
-* `+cX,cZ` : Additional chunks to add to totals.
+	check [options] worldpath
 
-#### LEVEL
+_worldpath_ is a folder containing the world to analyze.
 
-	level worldpath [attr=value]
+Options:
+
+* --check-chunks, --no-check-chunks
+  - Will compute the block/entity make-up of selected chunks.  The default
+	  is **--no-check-chunks**.
+* --x=_n_, --min-x=_min_, --max-x=_max_
+  - Will limit the processed chunk region by the specified _min_ and _max_
+	  **x** values (inclusive).  The **--x** option is a shortcut for
+		specifying **--min-x** and **--max-x** both equal to _n_.
+	- The default is to process all chunks
+	- NOTE: Limits are applied **before** the **adjchunk** shifts are
+	  calculated.
+* --z=_n_, --min-z=_min_, --max-z=_max_
+  - Will limit the processed chunk region by the specified _min_ and _max_
+	  **z** values (inclusive).  The **--z** option is a shortcut for
+		specifying **--min-z** and **--max-z** both equal to _n_.
+	- The default is to process all chunks
+	- NOTE: Limits are applied **before** the **adjchunk** shifts are
+	  calculated.
+
+#### level
 
 Displays and modifies certain level attributes.
 
-* `worldpath` : Directory path to world to display/modify.
-* `attr=value` : Modify the `attr` setting to `value`.
+	level [options] worldpath
 
-The following attributes are supported:
+Will display (and modify) attributes for the specified world.
 
-* `spawn=x,y,z` : World spawn point.
-* `name=text` : Level name.
-* `seed=integer` : Random Seed.
-* `generator=name[,version]` : Terrain generator.  PocketMine by
-  default only supports `flat` and `normal`.
-* `preset=preset` : Alias for `generatorOptions`.
-* `generatorOptions=preset` : Terrain generator `preset` string.
-  Ignored by the `normal` generator.  Used by `flat`.
+Options:
 
-#### NBTDUMP
+* --spawn=_x,y,z_
+  - Sets the world spawn point.
+* --name=_text_
+ 	- Sets the Level name.
+* --seed=_integer_
+	- Sets the random Seed.
+* --generator=_name_
+  - Sets the terrain generator.  PocketMine by default only supports
+		**flat** and **normal**.
+* --preset=_txt_
+	- Sets the Terrain generator **preset** string.
+  	Ignored by the **normal** generator.  Used by **flat**.
+* --fixname
+  - Will set the Level name string to the _worldpath_ folder's name.
+
+#### nbtdump
+
+Dumps the contents of an `NBT` formatted file.  Usually the `level.dat`
+file in the world folder.
 
 	nbtdump nbt_file
-
-Dumps the contents of an `NBT` formatted file.
-
 
 ## Installation
 
 Requirements:
 
-* This software has only been tested on Linux
-* PHP v5.6.0, version used by PocketMine-MP v1.4.1.  This one contains
-  all dependancies.
-* PHP CLI API
+* This software is only supported on Linux
+* PHP v5.6.xx, version used by PocketMine-MP.  This one contains
+  most dependancies.  Note that depending on the PHP binary being used
+	the **LevelDB** format may or may **not** be supported.
 
-Download `pmimporter.phar` and use.  It does *not* need to be
+Download `pmimporter.phar` and use.  It does **not** need to be
 installed.
 
 
 ## Configure translation
 
-
 You can configure the translation by providing a `rules` file and
-passing it to `pmcovert` with the `-c` option. The format of `rules.txt`
+passing it to `covert` with the `--rules` option. The format of `rules.txt`
 is as follows:
 
 * comments, start with `;` or `#`.
-* `BLOCKS` - indicates the start of a blocks translation rules section.
+<!-- * `BLOCKS` - indicates the start of a blocks translation rules section. -->
 * `source-block = target-block` is a translation rule.  Any block of
   type `source-block` is converted to `target-block`.
 
 There is a default set of conversion rules, but you can tweak it by
-using `rules`.
-
+using `--rules`.
 
 ## FAQ
 
-
 * Q: Why it takes so long?
-* A: Because my programming skills suck.  I usally start a conversion
-  and go to bed.  When I wake up in the morning the map is ready to
-  play.
+* A: Because my programming skills suck.
 * Q: Does it support LevelDB files (Pocket Edition v0.9.0 infinite
   worlds)?
-  A: No, it does *NOT*.  You need to convert those to _Anvil_ format
-  first using something like
-  [LevelDb2Avnil](https://github.com/ljyloo/LevelDb2Avnil).
+* A: There is experimental support for that.  Your **PHP** installation
+	needs to have a compatible [leveldb](https://github.com/PocketMine/php-leveldb).
 * Q: Why tall builds seem to be chopped off at te top?
 * A: That is a limitation of Pocket Edition.  It only supports chunks
   that are up to 128 blocks high, while the PC edition Anvil worlds
   can support up to 256 blocks high.  You can shift worlds down by
-  using the `-o` option.  So if you use `-o 40` that will move the
-  build down 40 blocks.  *BE CAREFUL NOT TO REMOVE THE GROUND*
-* Q: Why my Anvil format file is not recognized?
-* A: That happens with Anvil files that were converted from an
-  McRegion file.  These files contain both `.mcr` and .`mca` files.
-  These confuses the File format recognizer.  You need to delete the
-  `.mcr` files so the world is recognized as in Anvil format.
-* Q: Why I experience glitches when I enter a new world?
-* A: This is a Minecraft Pocket Edition limitation.  This is made
-  worse by spawning into a very large chunk (usually very detailed
-  builds). My recommendation is to change the spawn point to a very
-  flat (boring) area.  Sometimes exting and re-entering the game
-  helps.
+  using the `--yoff` option.  So if you use `--yoff=-40` that will move the
+  build down 40 blocks.  **BE CAREFUL NOT TO REMOVE THE GROUND**
 * Q: Why I see some blocks that are not in the original map?
 * A: These have to do with how the translation happens.  There are
   blocks that are not supported by Minecraft Pocket Edition.  These
   need to be map to a block supported by MCPE.  You can tweak this by
   modifying the conversion rules.
-* Q: Why do converted maps overload my server?
-* A: Detailed maps need to be uncompressed by the server.  These take
-  an additional load on the server.
 
 ## References
 
@@ -199,19 +206,12 @@ using `rules`.
 
 ## Issues and Bugs
 
-
-* Performance is quite poor.  It takes me 5 minutes to process a small
-  map on Linux.  Large maps can easily take days.
-* The only target format implemented is McRegion.
-* Anvil maps are silently truncated to be less than 128 blocks high.  
-  The PocketMine-MP core API only support Y dimensions for 0 to 127.
-* PMF v1.3 maps do not provide valid Entity data so it is ignored.
-* Entity data is a bit dodgy:
-  * Dropped items are currently *not* copied.  They sometimes crash the
-    client.
-  * PocketMine itself has incomplete Entity support, so things are
-    copied but are usually ignored by PocketMine.
-* Conversion table could be better.  I am open to suggestions.
+* PMF1.3 performance is still low and also Entities from this format are
+  **not** imported.  Note that since there are very few PMF1.3 maps around,
+	this is something that will probably **not** be fixed.
+* When converting Anvil to non-Anvil formats, maps are silently truncated to
+	be less than 128 blocks high, unless.  Currently Anvil is the only map
+	format that support 256 blocks high worlds.
 
 # Todo
 
@@ -246,7 +246,8 @@ using `rules`.
   - syntax of sub-commands changed
   - PocketMine-MP plugin has been discontinued
   - Major speed improvements
-  - Merge maps at a chunk level.
+  - Imports chunks into existing maps.
+	- **TODO**: Initial LevelDB support
 * 1.5upd2: Update
   - Added new blocks since 0.10
 * 1.5upd1: Bugfix

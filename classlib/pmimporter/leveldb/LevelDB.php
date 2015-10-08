@@ -113,7 +113,9 @@ class LevelDB implements LevelFormat {
 	public function getChunks() {
 		$chunks = [];
 		$lock = new Lock($this->path."/level.dat");
-		$db = new \LevelDB($this->path."/db/");
+		$db = new \LevelDB($this->path."/db",[
+			"compression" => LEVELDB_ZLIB_COMPRESSION
+		]);
 		$it = $db->getIterator();
 		// Or loop in foreach
 		while ($it->valid()) {
@@ -130,7 +132,9 @@ class LevelDB implements LevelFormat {
 
 	public function getChunk($x,$z,$yoff=0) {
 		$lock = new Lock($this->path."/level.dat");
-		$db = new \LevelDB($this->path."/db/");
+		$db = new \LevelDB($this->path."/db",[
+			"compression" => LEVELDB_ZLIB_COMPRESSION
+		]);
 		$index = self::chunkIndex($x,$z);
 		$terrain = $db->get($index.self::ENTRY_TERRAIN);
 		$entityData = $db->get($index.self::ENTRY_ENTITIES);
@@ -223,12 +227,53 @@ class LevelDB implements LevelFormat {
 			}
 			$offset += 1024;
 		}
+		return $this->newChunk($data);
+	}
+	public function newChunk(array &$data) {
 		return new BaseChunk($this,$data);
 	}
 	public function putChunk($cX,$cZ,Chunk $chunk) {
-		die(__METHOD__.",".__LINE__.": TODO\n");
-	}
-	public function newChunk(array &$data) {
-		die(__METHOD__.",".__LINE__.": TODO\n");
+		// Convert chunk to binary...
+		$index = self::chunkIndex($cX,$cZ);
+		$writer = new NBT(NBT::LITTLE_ENDIAN);
+		$terrain = $data["blocks"] . $data["meta"] .
+					$data["skyLight"] . $data["blockLight"] .
+					pack("C*", ... $data["heightMap"]) .
+					pack("N*", ... $data["biomeColors"]);
+		$entity = $chunk->getEntities();
+		if (count($entity) == 0) {
+			$entityData = false;
+		} else {
+			$writer->setData($entity);
+			$entityData = $writer->write();
+		}
+		$tiles = $chunk->getTiles();
+		if (count($tiles) == 0) {
+			$tileData = false;
+		} else {
+			$writer->setData($tiles);
+			$tileData = $writer->write();
+		}
+		$flags = chr(($chunk->isGenerated() ? 0x01 : 0)|($chunk->isPopulated ? 0x02 : 0)|($chunk->isLightPopulated() ? 0x04 : 0));
+
+		$lock = new Lock($this->path."/level.dat",LOCK_EX);
+		$db = new \LevelDB($this->path."/db",[
+			"compression" => LEVELDB_ZLIB_COMPRESSION
+		]);
+		$db->put($index.self::ENTRY_TERRAIN,$terrain);
+		if ($entityData === false) {
+			$db->delete($index.self::ENTRY_ENTITIES);
+		} else {
+			$db->put($index.self::ENTRY_ENTITIES,$entityData);
+		}
+		if ($tileData === false) {
+			$db->delete($index.self::ENTRY_TILES);
+		} else {
+			$db->put($index.self::ENTRY_TILES,$tileData);
+		}
+		$db->put($index.self::ENTRY_FLAGS,$flags);
+		$db->put($index.self::ENTRY_VERSION,"\x02");
+		$db->close();
+		unset($lock);
 	}
 }

@@ -11,6 +11,6 @@ use pmimporter\leveldb\LevelDB;
 
 LevelFormatManager::addFormat(Anvil::class);
 LevelFormatManager::addFormat(McRegion::class);
-//LevelFormatManager::addFormat(McPe020::class);
-//LevelFormatManager::addFormat(Pm13::class);
+LevelFormatManager::addFormat(McPe020::class);
+LevelFormatManager::addFormat(Pm13::class);
 //if (extension_loaded("leveldb")) LevelFormatManager::addFormat(LevelDB::class);

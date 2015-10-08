@@ -1,14 +1,15 @@
 <?php
 namespace pmimporter\mcpe020;
 use pmimporter\LevelFormat;
+use pmimporter\generic\ReadOnlyFormat;
 use pmimporter\LevelFormatManager;
-use pmimporter\mcpe020\McPe02Chunk;
+use pmimporter\generic\BaseChunk;
 use pmsrc\utils\Binary;
 use pmsrc\math\Vector3;
 use pmsrc\nbt\NBT;
 use pocketmine_1_3\PocketChunkParser;
 
-class McPe020 implements LevelFormat {
+class McPe020 extends ReadOnlyFormat {
 	protected $path;
 	protected $levelData;
 	protected $chunks;
@@ -27,9 +28,6 @@ class McPe020 implements LevelFormat {
 	}
 	public static function getProviderOrder() {
 		return self::ORDER_ZXY;
-	}
-	public static function writeable() {
-		return false;
 	}
 	public function __construct($path, $settings = null) {
 		if (file_exists($path)) {
@@ -64,10 +62,10 @@ class McPe020 implements LevelFormat {
 		die("$path: Does not exist\n");
 	}
 	public function getGenerator() {
-		return $this->levelData["generatorName"];
+		return "flat";
 	}
 	public function getPresets() {
-		return $this->levelData["generatorOptions"];
+		return "2;7,55x1,9x3,2;1;";
 	}
 	public function getSeed() {
 		return $this->levelData["RandomSeed"];
@@ -79,29 +77,47 @@ class McPe020 implements LevelFormat {
 		$chunks = [];
 		for ($x =0 ; $x < 16; $x++) {
 			for ($z =0 ; $z < 16; $z++) {
-				$chunks[implode(",",[$$x,$z])] = [ $x, $z];
+				$chunks[implode(",",[$x,$z])] = [ $x, $z];
 			}
 		}
 		return $chunks;
 	}
-	public function writeChunk($cX,$cZ,$data) {
-		die(__METHOD__.": NOT IMPLEMENTED\n");
-	}
-	public function readChunk($cX,$cZ) {
-	die(__METHOD__.": NOT IMPLEMENTED\n");
-	}
-	public function getChunk($cX,$cZ,$yoff=0) {
-		if ($yoff) die(__METHOD__.": YOFF!=0 NOT IMPLEMENTED\n");
-		$map = $this->chunks->getParsedChunk($cX,$cZ);
+
+	public function getChunk($x,$z,$yoff=0) {
+		$map = $this->chunks->getParsedChunk($x,$z);
 		$data = [
 			"x" => $x,
 			"z" => $z,
-			"blocks" => $map[$x][$z][0],
-			"meta" => $map[$x][$z][1],
-			"skyLight" => $map[$x][$z][2],
-			"blockLight" => $map[$x][$z][3],
 		];
-
+		if ($yoff == 0) {
+			$data["blocks"] = implode("",$map[0]);
+			$data["meta"] = implode("",$map[1]);
+			$data["skyLight"] = implode("",$map[2]);
+			$data["blockLight"] = implode("",$map[3]);
+		} elseif ($yoff < 0) {
+			$yoff = -$yoff;
+			$data["blocks"] = Shifter::down(implode("",$map[0]),"\x00",$yoff,PM_HEIGHT_BITS);
+			if (($yoff & 1) == 0) {
+				$data["meta"] = Shifter::down(implode("",$map[1]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["skyLight"] = Shifter::down(implode("",$map[2]),"\xff",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["blockLight"] = Shifter::down(implode("",$map[3]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			} else {
+				$data["meta"] = Shifter::nibbleDown(implode("",$map[1]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["skyLight"] = Shifter::nibbleDown(implode("",$map[2]),"\xff",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["blockLight"] = Shifter::nibbleDown(implode("",$map[3]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			}
+		} else {
+			$data["blocks"] = Shifter::up(implode("",$map[0]),"\x00",$yoff,PM_HEIGHT_BITS);
+			if (($yoff & 1) == 0) {
+				$data["meta"] = Shifter::up(implode("",$map[1]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["skyLight"] = Shifter::up(implode("",$map[2]),"\xff",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["blockLight"] = Shifter::up(implode("",$map[3]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			} else {
+				$data["meta"] = Shifter::nibbleUp(implode("",$map[1]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["skyLight"] = Shifter::nibbleUp(implode("",$map[2]),"\xff",$yoff>>1,PM_HEIGHT_BITS-1);
+				$data["blockLight"] = Shifter::nibbleUp(implode("",$map[3]),"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			}
+		}
 		$min_x = $x << 4; $max_x = ($x << 4) + 15;
 		$min_z = $z << 4; $max_z = ($z << 4) + 15;
 
@@ -126,8 +142,8 @@ class McPe020 implements LevelFormat {
 					$tiles[] = clone $n;
 				}
 			}
-
 		}
-		return new McPe020Chunk($data);
+		return new BaseChunk($this,$data);
 	}
+
 }

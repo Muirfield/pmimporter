@@ -4,6 +4,8 @@ if (!defined('CLASSLIB_DIR'))
 
 require_once(CLASSLIB_DIR."common.php");
 use pmimporter\LevelFormatManager;
+use pocketmine_1_3\pmf\PMFLevel;
+
 use pmsrc\utils\Binary;
 use pmsrc\nbt\NBT;
 use pmsrc\nbt\tag\Byte;
@@ -43,6 +45,25 @@ if ($fixname) $opts["name"] = basename($wpath);
 
 $fmt = LevelFormatManager::getFormat($wpath);
 if ($fmt === null) die("$wpath: unrecognized format\n");
+
+if (!file_exists($wpath."/level.dat") && file_exists($wpath."/level.pmf")) {
+	foreach ($opts as $k=>$v) {
+		if ($v !== false) {
+			echo "WARNING: Format ".$fmt::getFormatName()." is a read-only format!\n";
+			break;
+		}
+	}
+	$pmf = new PMFLevel($wpath."/level.pmf");
+	echo "LevelName:  ".$pmf->getData("name")."\n";
+	echo "Spawn:      ".implode(",",[
+		$pmf->getData("spawnX"),
+		$pmf->getData("spawnY"),
+		$pmf->getData("spawnZ"),
+	])."\n";
+	echo "RandomSeed: ".$pmf->getData("seed")."\n";
+	exit;
+}
+
 $dat = file_get_contents($fpath = $wpath."/level.dat");
 if ($dat === false) die("$wpath: unable to open level.dat\n");
 

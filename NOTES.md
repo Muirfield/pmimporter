@@ -1,3 +1,17 @@
+- PMF performance is still poor; to optimize or not?
+  - getBlockId, getBlockDamage : Organized in section-like minichunks in
+    ZXY order.
+  - Extract columns (w/ substr) and concat'ed them
+- current per chunk fork seem to incur in a 20% system overhead.  Is it
+  because of the synchronisation locking or the fork overhead?
+  - this is still better than previous approach based on regions.  (One large
+    region, with multiple smalls regions doesn't do any parallelization)
+  - reduce forking --> pre-forked worker threads?
+  - shuffle the chunk list before processing to reduce contention of threads
+    trying to lock the same region. (shuffle($array))
+    - Add this and test difference...
+  - Switch to pthreads?
+- Write a benchmark script?
 
 # Formats
 

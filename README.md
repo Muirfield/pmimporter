@@ -23,7 +23,7 @@ It supports the following formats:
 - Anvil: Minecraft PC Edition v1.2 and better
 - PMF: PocketMine v1.3.  **READ-ONLY** format.
 - mcpe0.2.0: Minecraft PE finite worlds.   **READ-ONLY** format.
-- **INDEV** LevelDB: Minecraft PE v0.9.0 (or better) infinite worlds.
+- LevelDB: Minecraft PE v0.9.0 (or better) infinite worlds.
 
 When importing maps it will by default check the used blocks to make sure
 that only blocks supported by Minecraft PE are generated.  It does this by
@@ -216,6 +216,7 @@ using `--rules`.
 
 # Todo
 
+* Convert: show progress percentage (based on chunks)
 * Convert tiles|entities
 * Testing
   - conversion
@@ -231,7 +232,7 @@ using `--rules`.
 
 ## Changes
 
-* 2.0:
+* 2.0: ???
   - removed commands: entities, dumpchunk
   - syntax of sub-commands changed
   - PocketMine-MP plugin has been discontinued
@@ -239,6 +240,8 @@ using `--rules`.
   - Imports chunks into existing maps.
 	- Added PHP7 compatibility
 	- Initial LevelDB support
+	- Can now output Anvil worlds
+	- This release only supported on LINUX.
 * 1.5upd2: Update
   - Added new blocks since 0.10
 * 1.5upd1: Bugfix

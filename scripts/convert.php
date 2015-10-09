@@ -127,7 +127,8 @@ if (!$clobber) {
 }
 if (count($chunks) == 0) die("No chunks selected for copy\n");
 echo "Number of Chunks to Copy: ".count($chunks)."\n";
-
+// You need 3 or more chunks to start multi-threading
+if (count($chunks) < 3) $opts["threads"] = 1;
 
 //if ($opts["threads"] > 1) {
 //	echo("Disabling multiprocessing : slows down!\n");
@@ -156,7 +157,7 @@ function copyNextChunk() {
 
 	if ($pid == 0) {
 		//echo "spawned: ".getmypid()."\n";
-		echo ".";
+		//echo ".";
 		$chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
 		LevelFormatManager::importChunk($dst,$cx+$chgX,$cz+$chgZ,$chunk,$convert);
 		exit(0);
@@ -167,10 +168,12 @@ function copyNextChunk() {
 	}
 }
 
+if (count($chunks)-1 < $opts["threads"]) $opts["threads"] = count($chunks)-1;
 echo "Threads: ".$opts["threads"]."\n";
 
 // Do ONE chunk in the main thread to make sure all modules are indeed in
 // memory before we start forking
+$total = count($chunks);
 list($cx,$cz) = array_pop($chunks);
 $chunk = $src->getChunk($cx,$cz,$opts["yoff"]);
 LevelFormatManager::importChunk($dst,$cx+$chgX,$cz+$chgZ,$chunk,$convert);
@@ -181,6 +184,7 @@ for ($c = $opts["threads"];$c--;) {
 	copyNextChunk();
 }
 while ($pid = pcntl_wait($rstatus)) {
+	echo "\r".($total-count($chunks))."/".$total." (".((int)(100*($total-count($chunks))/$total))."%) ";
 	if (!isset($workers[$pid])) continue;
 	list($cX,$cZ) = $workers[$pid];
 	unset($workers[$pid]);
@@ -195,4 +199,4 @@ while ($pid = pcntl_wait($rstatus)) {
 		if (!count($workers)) break;
 	}
 }
-echo "ALL DONE\n";
+echo "\nDONE\n";

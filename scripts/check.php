@@ -54,17 +54,24 @@ $chunks = $level->getChunks();
 echo "Chunks:    ".count($chunks)."\n";
 
 $qminx = $qmaxx = $qminz = $qmaxz = null;
-foreach ($chunks as $chunk) {
+$selected = [];
+foreach ($chunks as $zx => $chunk) {
 	list($cx,$cz) = $chunk;
 
 	if ($qminx === null || $cx < $qminx) $qminx = $cx;
 	if ($qmaxx === null || $cx > $qmaxx) $qmaxx = $cx;
 	if ($qminz === null || $cz < $qminz) $qminz = $cz;
 	if ($qmaxz === null || $cz > $qmaxz) $qmaxz = $cz;
+
+	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+			($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
+	$selected[$zx] = [$cx,$cz];
 }
 echo "Chunk area: ($qminx,$qminz)-($qmaxx,$qmaxz)\n";
+echo "Number of chunks selected: ".count($selected)."\n";
+
 if (!$chkchunks) exit(0);
-$cnt = 0;
+
 function incr(&$stats,$attr) {
 	if (isset($stats[$attr])) {
 		++$stats[$attr];
@@ -73,12 +80,12 @@ function incr(&$stats,$attr) {
 	}
 }
 $stats = [];
-foreach ($chunks as $chunk) {
+$total = count($selected);
+$k = 0;
+foreach ($selected as $chunk) {
+	echo "\r ".$k."/".$total." (".((int)($k*100/$total))."%) "; ++$k;
 	list($cx,$cz) = $chunk;
-	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
-			 ($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
   //echo "($cx,$cz)\n";
-	++$cnt;
 	$chunk = $level->getChunk($cx,$cz);
 	if ($chunk->isPopulated()) incr($stats,"-populated");
 	if ($chunk->isGenerated()) incr($stats,"-generated");
@@ -121,7 +128,6 @@ foreach ($chunks as $chunk) {
 	}
 
 }
-echo "Number of chunks selected: ".$cnt."\n";
 if (isset($stats["Height:Count"]) && isset($stats["Height:Sum"])) {
 	$stats["Height:Avg"] = $stats["Height:Sum"]/$stats["Height:Count"];
 	unset($stats["Height:Count"]);

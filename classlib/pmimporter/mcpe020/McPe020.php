@@ -122,7 +122,6 @@ class McPe020 extends ReadOnlyFormat {
 		$min_x = $x << 4; $max_x = ($x << 4) + 15;
 		$min_z = $z << 4; $max_z = ($z << 4) + 15;
 
-
 		if (isset($this->nbt["Entities"])) {
 			$data["entities"] = [];
 			foreach ($this->nbt["Entities"]->getValue() as $n) {

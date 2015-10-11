@@ -216,7 +216,6 @@ using `--rules`.
 
 # Todo
 
-* Convert: show progress percentage (based on chunks)
 * Convert tiles|entities
 * Testing
   - conversion

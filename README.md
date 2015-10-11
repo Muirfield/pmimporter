@@ -220,6 +220,7 @@ using `--rules`.
 * Testing
   - conversion
 	- features
+* Add @vertx: feature to exclude chunks (instead of including)
 
 | reading\writing | anvil | mcregion | LevelDB |
 |-----------------|-------|----------|---------|

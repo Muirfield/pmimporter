@@ -128,6 +128,7 @@ foreach ($selected as $chunk) {
 	}
 
 }
+echo "DONE\n";
 if (isset($stats["Height:Count"]) && isset($stats["Height:Sum"])) {
 	$stats["Height:Avg"] = $stats["Height:Sum"]/$stats["Height:Count"];
 	unset($stats["Height:Count"]);

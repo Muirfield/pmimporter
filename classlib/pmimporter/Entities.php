@@ -22,6 +22,11 @@ abstract class Entities {
 			self::$entityNames[$code] = $name;
 		}
 	}
+	public static function getEntityById($id) {
+		if (isset(self::$entityNames[$id])) return self::$entityNames[$id];
+		return null;
+	}
+	/*
 	public static function getId($id) {
 		if (isset(self::$entityIds[$id]) && self::$entityIds[$id] > 0) return $id;
 		return null;
@@ -30,9 +35,5 @@ abstract class Entities {
 		if (isset(self::$entityIds[$name]) && self::$entityIds[$name] > 0)
 			return self::$entityIds[$name];
 		return null;
-	}
-	public static function getEntityById($id) {
-		if (isset(self::$entityNames[$id])) return self::$entityNames[$id];
-		return null;
-	}
+	}*/
 }

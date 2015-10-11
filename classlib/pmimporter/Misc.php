@@ -10,7 +10,7 @@ abstract class Misc {
 		}
 		return implode('_', $ret);
 	}
-	public static function readTable($fn) {
+	public static function readTable($fn,$cols=2) {
 		$table = [];
 		$fp = fopen($fn,"r");
 		if (!$fp) return false;
@@ -19,8 +19,8 @@ abstract class Misc {
 			$ln = preg_replace('/^\s+/','',$ln);
 			$ln = preg_replace('/\s+$/','',$ln);
 			if ($ln == '') continue;	// Skip empty lines
-			$ln = preg_split('/\s+/',$ln,3);
-			if ($ln < 2) continue;
+			$ln = preg_split('/\s+/',$ln,$cols+1);
+			if ($cols < 2) continue;
 			$table[] = $ln;
 		}
 		fclose($fp);

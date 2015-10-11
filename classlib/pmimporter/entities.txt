@@ -5,16 +5,26 @@
 65 PrimedTnt
 66 FallingSand
 
-77 FishingRodHook
 80 Arrow
 81 Snowball
 82 ThrownEgg
-83 Minecart
+85 Fireball       ; Ghast Fireball
+
+77 LeashKnot
+77 FishingRodHook
+
 84 Painting
-85 GhastFireball
+
+83 MinecartChest
+83 MinecartFurnace
+83 MinecartSpawner
+83 MinecartTNT
+83 MinecartHopper
+83 MinecartCommandBlock
+83 MinecartRideable
+83 Minecart
 90 Boat
 
-32 Zombie
 33 Creeper
 34 Skeleton
 35 Spider
@@ -26,6 +36,8 @@
 41 Ghast
 42 MagnaCube
 43 Blaze
+; IN PC Edition, depends on isVillager NBT Tag...
+32 Zombie
 44 ZombieVillager
 
 10 Chicken
@@ -36,8 +48,11 @@
 16 MushroomCow
 17 Squid
 19 Bat
+20 VillagerGolem
 20 IronGolem
+21 SnowMan
 21 SnowGolem
+22 Ozelot
 22 Ocelot
 
 15 Villager

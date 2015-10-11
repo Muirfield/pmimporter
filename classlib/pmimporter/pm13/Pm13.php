@@ -11,6 +11,8 @@ use pmsrc\nbt\tag\ByteTag;
 use pmsrc\nbt\tag\ByteArrayTag;
 use pmsrc\nbt\tag\CompoundTag;
 use pmsrc\nbt\tag\EnumTag;
+use pmsrc\nbt\tag\StringTag;
+use pmsrc\nbt\tag\ShortTag;
 use pmsrc\nbt\tag\IntTag;
 use pmsrc\nbt\tag\IntArrayTag;
 use pmsrc\nbt\tag\LongTag;
@@ -21,6 +23,7 @@ use pmimporter\generic\BaseChunk;
 class Pm13 extends ReadOnlyFormat {
 	protected $path;
 	protected $pmfLevel;
+	protected $tiles;
 
 	public static function getFormatName() { return "PMF_1.3"; }
 	public static function isValid($path) {
@@ -41,6 +44,9 @@ class Pm13 extends ReadOnlyFormat {
 				$this->path = $path;
 				$pmfLevel = new PMFLevel($path."/level.pmf");
 				$this->pmfLevel = $pmfLevel;
+
+				$yml = dirname($this->pmfLevel->getFile())."/tiles.yml";
+				$this->tiles = file_exists($yml) ? yaml_parse_file($yml) : [];
 				return;
 			}
 			die("$path: Invalid format\n");
@@ -79,35 +85,34 @@ class Pm13 extends ReadOnlyFormat {
 			"blocks" => "",
 			"meta" => "",
 		];
-		// This is the simple (un-optimized) implementation
 
 		$xoff = $cX << 4; $zoff = $cZ << 4;
+		$data["blocks"] = "";
+		$data["meta"] = "";
 		for ($x =0; $x < 16 ; $x++) {
 			for ($z = 0; $z < 16 ; $z++) {
-				if ($yoff > 0) {
-					$data["blocks"] .= str_repeat("\x00",$yoff);
-					$data["meta"] .= str_repeat("\x00",$yoff>>1);
-					if (($yoff & 0x1) == 0x1) {
-						$data["blocks"] .= "\x00";
-						$data["meta"] = chr($this->pmfLevel->getBlockDamage($x,1,$z) << 4);
-						++$yoff;
-					}
-				}
-				$max = $yoff < 0 ? PM_MAX_HEIGHT + $yoff : PM_MAX_HEIGHT;
-				for ($y = $yoff > 0 ? $yoff : 0; $y < $max; $y++ ) {
-					$data["blocks"] .= chr($this->pmfLevel->getBlockID($x,$y-$yoff,$z));
-					if (($y & 0x1) == 1) continue;
-					$dl = $this->pmfLevel->getBlockDamage($x,$y-$yoff,$z);
-					$dh = $this->pmfLevel->getBlockDamage($x,$y-$yoff+1,$z);
-					$data["meta"] .= chr($dl | ($dh << 4));
-				}
-				if ($yoff < 0) {
-					$data["blocks"] .= str_repeat("\x00",$yoff);
-					$data["meta"] .= str_repeat("\x00",$yoff>>1);
-				}
+				$data["blocks"] .= $this->pmfLevel->getBlockIdColumn($xoff+$x,$zoff+$z);
+				$data["meta"] .= $this->pmfLevel->getBlockDamageColumn($xoff+$x,$zoff+$z);
 			}
 		}
+		//echo "BLOCKS=".strlen($data["blocks"])."\n";
 		$data["tiles"] = $this->getTileEntities($cX,$cZ,$yoff);
+		if ($yoff < 0) {
+			$yoff = -$yoff;
+			$data["blocks"] = Shifter::down($data["blocks"],"\x00",$yoff,PM_HEIGHT_BITS);
+			if (($yoff & 1) == 0) {
+				$data["meta"] = Shifter::down($data["meta"],"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			} else {
+				$data["meta"] = Shifter::nibbleDown($data["meta"],"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			}
+		} elseif ($yoff > 0) {
+			$data["blocks"] = Shifter::up($data["blocks"],"\x00",$yoff,PM_HEIGHT_BITS);
+			if (($yoff & 1) == 0) {
+				$data["meta"] = Shifter::up($data["meta"],"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			} else {
+				$data["meta"] = Shifter::nibbleUp($data["meta"],"\x00",$yoff>>1,PM_HEIGHT_BITS-1);
+			}
+		}
 		return $this->newChunk($data);
 	}
 	protected static function convertInventory($name,$src) {
@@ -126,13 +131,12 @@ class Pm13 extends ReadOnlyFormat {
 	}
 	public function getTileEntities($cX,$cZ,$yoff=0) {
 		$tiles = [];
-		$yml = dirname($this->pmfLevel->getFile())."/tiles.yml";
-		if (!file_exists($yml)) return $tiles;
-		$yml = yaml_parse_file($yml);
+
 		$min_x = $cX << 4; $min_z = $cZ << 4;
 		$max_x = $min_x+15; $max_z = $min_z+15;
-		foreach ($yml as $tile) {
+		foreach ($this->tiles as $tile) {
 			if (!isset($tile["id"])) continue;
+
 			if (isset($tile["x"]) && isset($tile["y"]) && isset($tile["z"])) {
 				if ($tile["x"] < $min_x || $tile["x"] > $max_x ||
 					$tile["z"] < $min_z || $tile["z"] > $max_z) continue;
@@ -143,7 +147,7 @@ class Pm13 extends ReadOnlyFormat {
 			} else {
 				continue;
 			}
-			switch ($tile["id"]) {
+			switch (strtolower($tile["id"])) {
 				case "sign":
 					$tiles[] =  new CompoundTag("",[new StringTag("id","sign"),
 															new StringTag("Text1",$tile["Text1"]),

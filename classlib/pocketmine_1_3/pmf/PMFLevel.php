@@ -320,6 +320,30 @@ class PMFLevel extends PMF{
 		$b = ord($this->chunks[$index][$Y]{(int) ($aY + ($aX << 5) + ($aZ << 9))});
 		return $b;
 	}
+  // ADDED API FUNCTION!
+
+  public function getBlockIdColumn($x,$z) {
+    if($x < 0 or $z < 0 or $x > 255 or $z > 255) return false;
+    $X = $x >> 4;
+		$Z = $z >> 4;
+		$index = $this->getIndex($X, $Z);
+    if(!isset($this->chunks[$index]) or $this->chunks[$index] === false){
+			if($this->loadChunk($X, $Z) === false) return false;
+    }
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+    $b = "";
+    //echo "KEYS($x,$z) = ".implode(",",array_keys($this->chunks[$index]))."\n";//##DEBUG
+    for ($y = 0 ; $y < 8; $y++) {
+      $z = substr($this->chunks[$index][$y],($aX << 5) + ($aZ << 9),16);
+      if (($l = strlen($z)) < 16) $z .= str_repeat("\x00",16-$l);
+      $b .= $z;
+      //echo "minchunk=".strlen($this->chunks[$index][$y])."\n";//##DEBUG
+    }
+    //echo "\nb=".strlen($b)." - ".dechex(crc32($b))."\n";//##DEBUG
+
+    return $b;
+  }
 
 	public function setBlockID($x, $y, $z, $block){
 		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){
@@ -365,6 +389,22 @@ class PMFLevel extends PMF{
 		}
 		return $m;
 	}
+  // ADDED API FUNCTION!
+  public function getBlockDamageColumn($x,$z) {
+    if ($x < 0 or $z < 0 or $x > 255 or $z > 255) return false;
+    $X = $x >> 4;
+		$Z = $z >> 4;
+		$index = $this->getIndex($X, $Z);
+		$aX = $x - ($X << 4);
+		$aZ = $z - ($Z << 4);
+    $m = "";
+    for ($y = 0; $y < 8; $y++) {
+      $z = substr($this->chunks[$index][$y], 16 + ($aX<<5) + ($aZ<<9), 8);
+      if (($l = strlen($z)) < 8) $z .= str_repeat("\x00",8-$l);
+      $m .= $z;
+    }
+		return $m;
+  }
 
 	public function setBlockDamage($x, $y, $z, $damage){
 		if($y > 127 or $y < 0 or $x < 0 or $z < 0 or $x > 255 or $z > 255){

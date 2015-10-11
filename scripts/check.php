@@ -10,6 +10,7 @@ use pmimporter\Entities;
 define('CMD',array_shift($argv));
 // Handle options
 $minx = $minz = $maxx = $maxz = null;
+$exclude = false;
 $chkchunks = false;
 while (count($argv) > 0) {
 	if (substr($argv[0],0,2) != "--") break;
@@ -30,6 +31,10 @@ while (count($argv) > 0) {
 		$chkchunks = true;
 	} elseif ($opt == "--no-check-chunks") {
 		$chkchunks = false;
+	} elseif ($opt == "--exclude") {
+		$exclude = true;
+	} elseif ($opt == "--include") {
+		$exclude = false;
 	} else {
 		die("Invalid option: $opt\n");
 	}
@@ -63,8 +68,14 @@ foreach ($chunks as $zx => $chunk) {
 	if ($qminz === null || $cz < $qminz) $qminz = $cz;
 	if ($qmaxz === null || $cz > $qmaxz) $qmaxz = $cz;
 
-	if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
-			($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
+  if ($exclude) {
+		if (!( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+				($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) ) continue;
+
+	} else {
+		if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+				($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
+	}
 	$selected[$zx] = [$cx,$cz];
 }
 echo "Chunk area: ($qminx,$qminz)-($qmaxx,$qmaxz)\n";

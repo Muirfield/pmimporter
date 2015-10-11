@@ -81,14 +81,26 @@ abstract class LevelFormatManager{
 			$data["blockLight"] = $chunk->getBlockLight();
 			$data["skyLight"] = $chunk->getSkyLight();
 		}
-		if ($adjX == 0 && $adjZ == 0) {
-			$data["entities"] = $chunk->getEntities();
-			$data["tiles"] = $chunk->getTiles();
+		if ($convert) {
+			if ($adjX == 0 && $adjZ == 0) {
+				$data["entities"] = Entities::convert($chunk->getEntities());
+				$data["tiles"] = $chunk->getTiles();
+			} else {
+				$xoff = $adjX << 4;
+				$zoff = $adjZ << 4;
+				$data["entities"] = Entities::convert($chunk->getEntities(),$xoff,0,$zoff);
+				$data["tiles"] = Shifter::tiles($chunk->getTiles(),$xoff,0,$zoff);
+			}
 		} else {
-			$xoff = $adjX << 4;
-			$zoff = $adjZ << 4;
-			$data["entities"] = Shifter::entities($chunk->getEntities(),$xoff,0,$zoff);
-			$data["tiles"] = Shifter::tiles($chunk->getTiles(),$xoff,0,$zoff);
+			if ($adjX == 0 && $adjZ == 0) {
+				$data["entities"] = $chunk->getEntities();
+				$data["tiles"] = $chunk->getTiles();
+			} else {
+				$xoff = $adjX << 4;
+				$zoff = $adjZ << 4;
+				$data["entities"] = Shifter::entities($chunk->getEntities(),$xoff,0,$zoff);
+				$data["tiles"] = Shifter::tiles($chunk->getTiles(),$xoff,0,$zoff);
+			}
 		}
 		$newChunk = $dst->newChunk($data);
 		$dst->putChunk($x,$z,$newChunk);

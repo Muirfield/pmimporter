@@ -72,12 +72,12 @@ abstract class Shifter{
     foreach ($data as $s) {
       $d = clone $s;
       if (isset($d->Pos) && count($d->Pos) == 3) {
-        if ($xoff !== 0) $d->Pos[0]->setValue($d->Pos[0]->getValue() + $xoff);
         if ($yoff !== 0) {
           $y = $d->Pos[1]->getValue() + $yoff;
           if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
           $d->Pos[1]->setValue($y);
         }
+        if ($xoff !== 0) $d->Pos[0]->setValue($d->Pos[0]->getValue() + $xoff);
         if ($zoff !== 0) $d->Pos[3]->setValue($d->Pos[3]->getValue() + $zoff);
       }
       $output[] = $d;
@@ -89,15 +89,15 @@ abstract class Shifter{
     $output = [];
     foreach ($data as $s) {
       $d = clone $s;
-      if ($xoff !== 0 && isset($d->x)) $d->x->setValue($d->x->getValue() + $xoff);
       if ($yoff !== 0 && isset($d->y)) {
         $y = $d->y->getValue() + $yoff;
         if ($y < 0 || $y > PM_MAX_HEIGHT) continue;
         $d->y->setValue($y);
       }
+      if ($xoff !== 0 && isset($d->x)) $d->x->setValue($d->x->getValue() + $xoff);
+      if ($zoff !== 0 && isset($d->z)) $d->z->setValue($d->z->getValue() + $zoff);
       $output[] = $d;
     }
-    if ($zoff !== 0 && isset($d->z)) $d->z->setValue($d->z->getValue() + $zoff);
     return $output;
   }
 }

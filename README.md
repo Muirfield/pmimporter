@@ -220,7 +220,6 @@ using `--rules`.
 * Testing
   - conversion
 	- features
-* Add @vertx: feature to exclude chunks (instead of including)
 
 | reading\writing | anvil | mcregion | LevelDB |
 |-----------------|-------|----------|---------|
@@ -242,6 +241,7 @@ using `--rules`.
 	- Initial LevelDB support
 	- Can now output Anvil worlds
 	- This release only supported on LINUX.
+	- Include/Exclude chunks (Requested by @vertx)
 * 1.5upd2: Update
   - Added new blocks since 0.10
 * 1.5upd1: Bugfix

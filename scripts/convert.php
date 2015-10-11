@@ -19,6 +19,8 @@ $opts = [
 ];
 $convert = true;
 $clobber = false;
+$exclude = false;
+
 $minx = $minz = $maxx = $maxz = null;
 while (count($argv) > 0) {
 	if (substr($argv[0],0,2) != "--") break;
@@ -43,6 +45,10 @@ while (count($argv) > 0) {
 		$clobber = true;
 	} elseif ($opt == "no-clobber") {
 		$clobber = false;
+	} elseif ($opt == "--exclude") {
+		$exclude = true;
+	} elseif ($opt == "--include") {
+		$exclude = false;
 	} else {
 		$opt = explode("=",$opt,2);
 		if (!isset($opts[$opt[0]])) die("Invalid option: ".$opt[0]."\n");
@@ -109,8 +115,13 @@ if ($minx === null && $minz === null && $maxx === null && $maxz === null) {
 	$chunks = [];
 	foreach ($src->getChunks() as $xz => $n) {
 		list($cx,$cz) = $n;
-		if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
-			 	($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
+		if ($exclude) {
+			if (!( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+				 	($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) )) continue;		
+		} else {
+			if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
+				 	($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
+		}
 		$chunks[$xz] = $n;
 	}
 }

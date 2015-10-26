@@ -3,6 +3,8 @@ namespace pmimporter;
 use pmimporter\LevelFormat;
 use pmimporter\Chunk;
 use pmimporter\Shifter;
+use pmimporter\Entities;
+use pmimporter\Tiles;
 
 abstract class LevelFormatManager{
 	protected static $formats = [];
@@ -84,11 +86,11 @@ abstract class LevelFormatManager{
 		if ($convert) {
 			if ($adjX == 0 && $adjZ == 0) {
 				$data["entities"] = Entities::convert($chunk->getEntities());
-				$data["tiles"] = $chunk->getTiles();
+				$data["tiles"] = Tiles::convert($chunk->getTiles());
 			} else {
 				$xoff = $adjX << 4;
 				$zoff = $adjZ << 4;
-				$data["entities"] = Entities::convert($chunk->getEntities(),$xoff,0,$zoff);
+				$data["entities"] = Shifter::entities($chunk->getEntities(),$xoff,0,$zoff);
 				$data["tiles"] = Shifter::tiles($chunk->getTiles(),$xoff,0,$zoff);
 			}
 		} else {

@@ -13,11 +13,13 @@ class Lock {
         if ($fp === false) die("$path: Unable to create lock!\n");
       }
     }
+
     if (flock($fp,$mode ) === false) die("$path: Unable to obtain lock!\n");
     $this->fp = $fp;
   }
   public function __destruct() {
     if ($this->fp === null) return;
+    flock($this->fp,LOCK_UN);
     fclose($this->fp);
   }
 }

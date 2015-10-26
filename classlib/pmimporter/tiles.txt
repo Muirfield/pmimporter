@@ -1,0 +1,8 @@
+Sign
+Chest
+Furnace
+FlowerPot
+MobSpawner
+Skull
+Cauldron
+EnchantTable

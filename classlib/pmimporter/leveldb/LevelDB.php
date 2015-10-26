@@ -131,7 +131,7 @@ class LevelDB implements LevelFormat {
 	}
 
 	public function getChunk($x,$z,$yoff=0) {
-		$lock = new Lock($this->path."/level.dat");
+		$lock = new Lock($this->path."/level.dat", LOCK_EX);
 		$db = new \LevelDB($this->path."/db",[
 			"compression" => LEVELDB_ZLIB_COMPRESSION
 		]);
@@ -141,6 +141,7 @@ class LevelDB implements LevelFormat {
 		$tileData = $db->get($index.self::ENTRY_TILES);
 		$flags = $db->get($index.self::ENTRY_FLAGS);
 		$db->close();
+		unset($db);
 		unset($lock);
 
 		if ($flags === false) $flags = "\x03";

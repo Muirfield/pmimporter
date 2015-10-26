@@ -20,7 +20,7 @@ abstract class Misc {
 			$ln = preg_replace('/\s+$/','',$ln);
 			if ($ln == '') continue;	// Skip empty lines
 			$ln = preg_split('/\s+/',$ln,$cols+1);
-			if ($cols < 2) continue;
+			if (count($ln) < $cols) continue;
 			$table[] = $ln;
 		}
 		fclose($fp);

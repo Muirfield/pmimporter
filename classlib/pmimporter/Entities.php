@@ -40,9 +40,9 @@ abstract class Entities {
 				if ($nid === 32 && isset($d->isVillager) && $d->isVillager->getValue()) $nid = 44;
 				$d->id = new IntTag("id", $nid);
 			}
-			if ($d->id->getValue() == 64) {
-				// Need to convert items!
-				die("TODO: NEED TO CONVERT ITEMS\n");
+			if ($d->id->getValue() == 64 && isset($d->Item)) {
+				$itemId = $d->Item->id->getValue();
+				if (Items::getItemById($itemId) == null) continue;
 			}
 			if (isset($d->Pos) && count($d->Pos) == 3) {
 				if ($xoff !== 0) $d->Pos[0]->setValue($d->Pos[0]->getValue() + $xoff);

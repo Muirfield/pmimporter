@@ -117,7 +117,7 @@ if ($minx === null && $minz === null && $maxx === null && $maxz === null) {
 		list($cx,$cz) = $n;
 		if ($exclude) {
 			if (!( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
-				 	($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) )) continue;		
+				 	($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) )) continue;
 		} else {
 			if ( ($minx !== null && $cx < $minx) || ($maxx !== null && $cx > $maxx) ||
 				 	($minz !== null && $cz < $minz) || ($maxz !== null && $cz > $maxz) ) continue;
@@ -140,6 +140,8 @@ if (count($chunks) == 0) die("No chunks selected for copy\n");
 echo "Number of Chunks to Copy: ".count($chunks)."\n";
 // You need 3 or more chunks to start multi-threading
 if (count($chunks) < 3) $opts["threads"] = 1;
+// TODO: We are not able to do this concurrently for LevelDB...
+if ($src instanceof \pmimporter\leveldb\LevelDB) $opts["threads"] = 1;
 
 //if ($opts["threads"] > 1) {
 //	echo("Disabling multiprocessing : slows down!\n");

@@ -207,16 +207,15 @@ using `--rules`.
 
 ## Issues and Bugs
 
-* PMF1.3 performance is still low and also Entities from this format are
-  **not** imported.  Note that since there are very few PMF1.3 maps around,
-	this is something that will probably **not** be fixed.
+* PMF1.3 Entities from this format are **not** imported.  Note that since
+  there are very few PMF1.3 maps around, this is something that will probably
+	**not** be fixed.
 * When converting Anvil to non-Anvil formats, maps are silently truncated to
 	be less than 128 blocks high, unless.  Currently Anvil is the only map
 	format that support 256 blocks high worlds.
 
 # Todo
 
-* Convert tiles|entities
 * Testing
   - conversion
 	- features

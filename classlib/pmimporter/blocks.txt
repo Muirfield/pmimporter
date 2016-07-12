@@ -28,13 +28,13 @@
 20	Glass
 21	LapisLazuliOre
 22	LapisLazuliBlock
--23	Dispenser		248
+23	Dispenser
 24	Sandstone
--25	NoteBlock		248
+25	NoteBlock
 26	Bed
 27	PoweredRail
--28	DetectorRail		27
--29	StickyPiston		248
+28	DetectorRail
+29	StickyPiston
 30	Cobweb
 31	TallGrass
 32	DeadBush
@@ -60,7 +60,7 @@
 52	MonsterSpawner
 53	OakWoodStairs
 54	Chest
--55	RedstoneWire		0
+55	RedstoneWire
 56	DiamondOre
 57	DiamondBlock
 58	CraftingTable
@@ -74,15 +74,15 @@
 66	Rail
 67	CobblestoneStairs
 68	WallSign
--69	Lever			0
--70	StonePressurePlate	96
+69	Lever
+70	StonePressurePlate
 71	IronDoor
--72	WoodenPressurePlate	96
+72	WoodenPressurePlate
 73	RedstoneOre
 74	GlowingRedstoneOre
--75	InactiveRedstoneTorch	50
--76	ActiveRedstoneTorch	50
--77	StoneButton		0
+75	InactiveRedstoneTorch
+76	ActiveRedstoneTorch
+77	StoneButton
 78	SnowCover
 79	Ice
 80	Snow
@@ -98,8 +98,8 @@
 90	Portal
 91	JackoLantern
 92	CakeBlock
--93	UnpoweredRepeater	248
--94	PoweredRepeater		248
+93	UnpoweredRepeater
+94	PoweredRepeater
 95	InvisibleBedrock
 96	Trapdoor
 97	MonsterEgg
@@ -123,21 +123,21 @@
 115	NetherWart
 116	EnchantingTable
 117	BrewingStand
--118	Cauldron		248
+118	Cauldron
 -119	EndPortal		0
 120	EndPortalFrame
 121	EndStone
 -122	DragonEgg		248
--123	RedstoneLamp		50
--124	LitRedstoneLamp		50
--125	DoubleWoodenSlab	157
-126	MysteryCake
+123	RedstoneLamp
+124	LitRedstoneLamp
+125	Dropper
+126	ActivatorRail
 127	Cocoa
 128	SandstoneStairs
 129	EmeraldOre
 -130	EnderChest		54
--131	TripwireHook		0
--132	Tripwire		0
+131	TripwireHook
+132	Tripwire
 133	BlockofEmerald
 134	SpruceWoodStairs
 135	BirchWoodStairs
@@ -148,18 +148,18 @@
 140	FlowerPot
 141	Carrots
 142	Potato
-143	MobHead
-144	Anvil
--145	PcAnvil			144
--146	TrappedChest		54
--147	LightPressurePlate	0
--148	HeavyPressurePlate	0
--149	UnpoweredComparator	0
--150	PoweredComparator	0
--151	DaylightDetector	0
+143	Button
+144	MobHead
+145	Anvil
+146	TrappedChest
+147	LightPressurePlate
+148	HeavyPressurePlate
+149	UnpoweredComparator
+150	PoweredComparator
+151	DaylightDetector
 152	RedstoneBlock
 153	NetherQuartzOre
--154	Hopper			248
+154	Hopper
 155	BlockofQuartz
 156	QuartzStairs
 157	WoodenDoubleSlab
@@ -170,9 +170,9 @@
 162	AcaciaWood
 163	AcaciaWoodStairs
 164	DarkOakWoodStairs
--165	SlimeBlock		133
+165	SlimeBlock
 -166	Barrier			95
--167	IronTrapdoor		96
+167	IronTrapdoor
 -168	Prismarine		247
 -169	SeaLantern		89
 170	HayBlock
@@ -182,12 +182,12 @@
 174	PackedIce
 175	Sunflower
 -176	StandingBanner		0
--177	WallBanner		248
--178	InvertedLightSensor	0
--179	RedSandstone		24
--180	RedSandstoneStairs	128
--181	DoubleRedSanstoneSlab	43
--182	RedSandstoneSlab	44
+-177	WallBanner		0
+178	InvertedLightSensor
+179	RedSandstone
+180	RedSandstoneStairs
+181	DoubleRedSanstoneSlab
+182	RedSandstoneSlab
 183	SpruceFenceGate
 184	BirchFenceGate
 185	JungleFenceGate

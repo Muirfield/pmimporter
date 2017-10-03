@@ -38,10 +38,10 @@
 30	Cobweb
 31	TallGrass
 32	DeadBush
--33	Piston			248
--34	PistonHead		248
+33	Piston
+34	PistonHead
 35	Wool
--36	PistonExtension		248
+36	PistonExtension
 37	Dandelion
 38	Poppy
 39	BrownMushroom
